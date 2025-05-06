@@ -16,9 +16,11 @@ export const ProjectCanvas = ({ projectId }: { projectId: string }) => {
 
     const onNodeDragStop = (_: any, node: any) => {
         updateServiceFx({
-            id: node.id,
-            position_x: node.position.x,
-            position_y: node.position.y
+            serviceId: node.id,
+            data: {
+                position_x: node.position.x,
+                position_y: node.position.y
+            }
         })
     }
 
@@ -37,8 +39,8 @@ export const ProjectCanvas = ({ projectId }: { projectId: string }) => {
             type: 'service',
             data: {
                 label: service.name,
-                status: service.status,
-                image: service.image,
+                status: service.deployment?.taskStatus,
+                image: service.deployment?.config?.image,
                 id: service.id
             },
             position: { x: service.position_x, y: service.position_y }

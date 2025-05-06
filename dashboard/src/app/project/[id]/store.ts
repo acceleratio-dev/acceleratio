@@ -19,7 +19,9 @@ $canvas.on(setCanvasData, (state, data) => ({
     ...data
 }))
 
-export const updateServiceFx = createEffect(servicesApi.update)
+export const updateServiceFx = createEffect((params: { serviceId: string, data: Partial<Service> }) =>
+    servicesApi.update(params.serviceId, params.data)
+)
 $canvas.on(updateServiceFx.doneData, (state, { data }) => {
     if (!data.success) {
         toast.error(data.error.message)
@@ -30,7 +32,16 @@ $canvas.on(updateServiceFx.doneData, (state, { data }) => {
 
     return {
         ...state,
-        services: [...state.services.filter(service => service.id !== project.id), project]
+        services: state.services.map(service => {
+            if (service.id === project.id) {
+                return {
+                    ...service,
+                    ...project
+                }
+            }
+
+            return service
+        })
     }
 })
 

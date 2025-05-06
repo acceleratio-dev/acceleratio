@@ -33,6 +33,7 @@ export class ProjectWebSocket {
 
         this.socket.onmessage = (event) => {
             const data = JSON.parse(event.data)
+            console.log(data)
 
             if (data.type === 'ping') {
                 this.socket.send(JSON.stringify({ type: 'pong' }))
@@ -50,11 +51,11 @@ export class ProjectWebSocket {
                     case ServiceWebsocketEvents.SERVICE_CREATED:
                         addService(data.payload)
                         break
-                    case ServiceWebsocketEvents.SERVICE_UPDATED:
-                        updateService({
-                            id: data.payload.serviceId,
-                            status: data.payload.status
-                        })
+                    // case ServiceWebsocketEvents.SERVICE_UPDATED:
+                    //     updateService({
+                    //         id: data.payload.serviceId,
+                    //         status: data.payload.status
+                    //     })
                 }
             }
         }

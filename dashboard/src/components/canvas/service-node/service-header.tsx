@@ -68,11 +68,11 @@ export const ServiceHeader = ({ label, image, isEditing }: { label: string, imag
 
 export const ServiceStatusBadge = ({ status }: { status: ServiceStatus }) => (
     <div>
-        <Badge className={`${STATUS_CONFIG[status].bgColor} ${STATUS_CONFIG[status].textColor} border-0`}>
+        <Badge className={`${STATUS_CONFIG[status]?.bgColor} ${STATUS_CONFIG[status]?.textColor} border-0`}>
             <div
-                className={`w-1.5 h-1.5 ${STATUS_CONFIG[status].color} rounded-full ${status === "running" ? "animate-pulse" : ""}`}
+                className={`w-1.5 h-1.5 ${STATUS_CONFIG[status]?.color} rounded-full ${status === "running" ? "animate-pulse" : ""}`}
             />
-            <span className="text-xs ml-1">{STATUS_CONFIG[status].label}</span>
+            <span className="text-xs ml-1">{STATUS_CONFIG[status]?.label}</span>
         </Badge>
     </div>
 )

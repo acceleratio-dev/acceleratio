@@ -26,13 +26,16 @@ export interface Service {
     id: string;
     projectId: string;
     name: string;
-    dockerContainerId: string;
-    image: string;
+    deployment: {
+        name: string;
+        status: string;
+        taskStatus: string;
+        config: {
+            image: string;
+        }
+    },
     position_x: number;
     position_y: number;
-    status: string;
     createdAt: string;
     updatedAt: string;
-    cpu?: number;
-    ram?: string;
 }

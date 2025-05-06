@@ -66,7 +66,8 @@ export const serviceWebsocket = (upgradeWebSocket: UpgradeWebSocket) => {
                             return
                         }
 
-                        const services = await ServiceService.getServices(projectId)
+                        const services = await ServiceService.getProjectServices(projectId)
+                        console.log('services', services.length)
                         const connInfo: ConnectionInfo = {
                             ws,
                             projectId,
