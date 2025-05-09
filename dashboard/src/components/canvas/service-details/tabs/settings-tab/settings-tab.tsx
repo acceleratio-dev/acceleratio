@@ -8,13 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider } from "react-hook-form"
-import { updateServiceFx } from "@/app/project/[id]/store"
-import { Globe, GlobeLock, Cpu, Server, ImageIcon, Terminal, Save } from "lucide-react"
-import { toast } from "sonner"
+import { Globe, GlobeLock } from "lucide-react"
 import { AddDomainDialog } from "./add-domain-dialog"
 import { Volume, VolumesManager } from "./volumes-manager"
 import { ResourcesLimits } from "./resources-limits"
 import { GeneralSettings } from "./general-settings"
+import { Service } from "@/api/types"
 
 const schema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -25,8 +24,7 @@ const schema = z.object({
     ram: z.number().min(0.5).max(32),
 })
 
-export const SettingsTab = ({ service_id }: { service_id: string }) => {
-    const [saving, setSaving] = useState(false)
+export const SettingsTab = ({ config, serviceId }: { config: Service['deployment']['config'], serviceId: Service['id'] }) => {
     const [volumes, setVolumes] = useState<Volume[]>([])
 
     const methods = useForm<z.infer<typeof schema>>({
@@ -41,9 +39,9 @@ export const SettingsTab = ({ service_id }: { service_id: string }) => {
         <FormProvider {...methods}>
             <form className="space-y-6 max-w-3xl mx-auto">
                 <GeneralSettings defaultValues={{
-                    image: "",
-                    command: ""
-                }} />
+                    image: config.image,
+                    command: config.command
+                }} serviceId={serviceId} />
 
                 {/* Domains */}
                 <Card>

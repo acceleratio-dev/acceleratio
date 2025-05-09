@@ -1,12 +1,9 @@
 "use client"
 
-import { addService, setCanvasData, updateService } from "./store"
+import { setCanvasData, updateServiceStatus } from "./store"
 
 enum ServiceWebsocketEvents {
-    SERVICE_CREATED = "service_created",
-    SERVICE_UPDATED = "service_updated",
-    SERVICE_DELETED = "service_deleted",
-    SERVICE_STATUS_UPDATED = "service_status_updated",
+    STATUS_UPDATED = "status_updated",
 }
 
 export class ProjectWebSocket {
@@ -33,7 +30,6 @@ export class ProjectWebSocket {
 
         this.socket.onmessage = (event) => {
             const data = JSON.parse(event.data)
-            console.log(data)
 
             if (data.type === 'ping') {
                 this.socket.send(JSON.stringify({ type: 'pong' }))
@@ -48,14 +44,14 @@ export class ProjectWebSocket {
 
             if (data.event_type) {
                 switch (data.event_type) {
-                    case ServiceWebsocketEvents.SERVICE_CREATED:
-                        addService(data.payload)
-                        break
-                    // case ServiceWebsocketEvents.SERVICE_UPDATED:
-                    //     updateService({
-                    //         id: data.payload.serviceId,
-                    //         status: data.payload.status
-                    //     })
+                    // case ServiceWebsocketEvents.SERVICE_CREATED:
+                    //     addService(data.payload)
+                    //     break
+                    case ServiceWebsocketEvents.STATUS_UPDATED:
+                        updateServiceStatus({
+                            serviceId: data.payload.serviceId,
+                            status: data.payload.status
+                        })
                 }
             }
         }

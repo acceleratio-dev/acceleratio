@@ -5,6 +5,8 @@ import { DeploymentRepository } from "@/infrastructure/db/deployment-repository"
 import { DeploymentConfig, DeploymentStatus, DeploymentTaskStatus } from "@/domain/entities/deployment";
 import { UpdateServiceConfigDto } from "../dto/service/update-service-config-dto";
 import { UpdateServiceMetaDto } from "../dto/service/update-service-meta-dto";
+import { serviceWebsocketBroadcastMessage } from "@/interfaces/websocket/service-websocket";
+import { ServiceWebsocketEvents } from "@/interfaces/websocket/types";
 export class ServiceService {
     private static repository = new ServiceRepository();
     private static deploymentRepository = new DeploymentRepository();
@@ -35,7 +37,6 @@ export class ServiceService {
         }
 
         const deployment = await this.deploymentRepository.getDraftDeployment(serviceId);
-
         if (!deployment) {
             return {
                 message: "No changes to deploy",
@@ -51,6 +52,7 @@ export class ServiceService {
         const taskId = await this.dockerClient.createService({
             ...deployment.config as DeploymentConfig,
             deploymentId: deployment.id,
+            projectId: service.projectId!,
         })
 
         await this.deploymentRepository.updateDraftDeployment({
@@ -74,16 +76,14 @@ export class ServiceService {
     }
 
     static async updateServiceConfig(serviceId: string, payload: UpdateServiceConfigDto) {
-        let deployment;
-        deployment = await this.deploymentRepository.getDraftDeployment(serviceId);
+        const deployment = await this.deploymentRepository.getDraftDeployment(serviceId);
         if (!deployment) {
             const newDeployment = await this.deploymentRepository.createDeployment({
                 serviceId,
                 name: "Config Update",
                 config: {
-                    image: 'nginx:latest',
                     ...payload,
-                },
+                } as any,
             });
             return newDeployment.config;
         }
@@ -95,6 +95,16 @@ export class ServiceService {
                 ...payload,
             },
         })
+
+        const service = await this.repository.getServiceById(serviceId);
+
+        serviceWebsocketBroadcastMessage({
+            type: ServiceWebsocketEvents.STATUS_UPDATE,
+            payload: {
+                serviceId: serviceId,
+                status: updatedDeployment.taskStatus as DeploymentTaskStatus,
+            },
+        }, service?.projectId!)
 
         return updatedDeployment.config;
     }

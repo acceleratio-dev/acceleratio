@@ -2,7 +2,6 @@ import Bree from "bree";
 import { JobsEnum } from "./jobs/jobs-enum";
 import path from "path";
 import { v4 as uuidv4 } from 'uuid';
-import { serviceWebsocketBroadcastMessage } from "@/interfaces/websocket/service-websocket";
 
 const bree = new Bree({
     root: false,
@@ -10,7 +9,7 @@ const bree = new Bree({
     workerMessageHandler({ message }) {
         if (!message) return;
         if (message.event_type) {
-            serviceWebsocketBroadcastMessage(JSON.stringify(message), message.projectId);
+            // serviceWebsocketBroadcastMessage(JSON.stringify(message), message.projectId);
         }
         if (message.spawnJob) {
             Scheduler.runJob(message.spawnJob.type, message.spawnJob.data);

@@ -2,7 +2,7 @@ import { DeploymentTaskStatus } from "@/domain/entities/deployment";
 
 declare var self: Worker;
 
-const acceptedEvents = ['die', 'start']
+const acceptedEvents = ['die', 'start', 'create']
 
 const dockerWorker = async () => {
     try {
@@ -34,12 +34,14 @@ const dockerWorker = async () => {
                 try {
                     const eventData = JSON.parse(event)
                     const deploymentId = eventData.Actor?.Attributes["acceleratio.deployment.id"]
+                    const projectId = eventData.Actor?.Attributes["acceleratio.project.id"]
                     const status = eventData.status
+                    console.log(deploymentId, status)
                     if (deploymentId && status && acceptedEvents.includes(status)) {
-                        console.log(deploymentId, status)
                         postMessage({
                             deploymentId,
                             status,
+                            projectId,
                         })
                     }
                 } catch (e) {

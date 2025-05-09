@@ -1,20 +1,50 @@
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ImageIcon, Server, Terminal } from "lucide-react"
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ImageIcon, Save, Server, Terminal, Loader2 } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { useForm } from "react-hook-form"
+import { Service } from "@/api/types"
+import { Button } from "@/components/ui/button"
+import { useEffect } from "react"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { updateServiceConfigFx } from "@/app/project/[id]/store"
 
-interface Form {
-    image: string
-    command: string
-}
 
-export const GeneralSettings = ({ defaultValues }: { defaultValues: Form }) => {
+type Form = Pick<Service['deployment']['config'], 'image' | 'command'>
+
+const schema = z.object({
+    image: z.string().min(1, "Image is required"),
+    command: z.string().optional()
+})
+
+export const GeneralSettings = ({ defaultValues, serviceId }: { defaultValues: Form, serviceId: Service['id'] }) => {
     const {
         register,
-        formState: { errors }
+        handleSubmit,
+        formState: { errors, isDirty, isSubmitting },
+        reset
     } = useForm<Form>({
-        defaultValues
+        defaultValues,
+        resolver: zodResolver(schema)
+    })
+
+    useEffect(() => {
+        reset({
+            image: defaultValues?.image,
+            command: defaultValues?.command
+        })
+    }, [defaultValues, reset])
+
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            await updateServiceConfigFx({ serviceId, data })
+            reset(data)
+        } catch (error) {
+            toast.error("Failed to update settings")
+            console.error(error)
+        }
     })
 
     return (
@@ -24,6 +54,20 @@ export const GeneralSettings = ({ defaultValues }: { defaultValues: Form }) => {
                     <Server className="mr-2 h-5 w-5 text-neutral-400" />
                     General Settings
                 </CardTitle>
+                <CardAction>
+                    {
+                        isDirty && (
+                            <Button size="sm" disabled={isSubmitting} onClick={onSubmit}>
+                                {isSubmitting ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="h-4 w-4" />
+                                )}
+                                <span className="ml-2">Save changes</span>
+                            </Button>
+                        )
+                    }
+                </CardAction>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">

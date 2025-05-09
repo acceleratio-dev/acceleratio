@@ -1,7 +1,7 @@
 "use client"
 import { Background, BackgroundVariant, MiniMap, ReactFlow, useNodesState } from '@xyflow/react';
 import { ServiceNode } from '@/components/canvas/service-node';
-import { Service } from '@/api/types';
+import { DeploymentTaskStatus } from '@/api/types';
 import '@xyflow/react/dist/style.css';
 import { useEffect, useLayoutEffect } from 'react';
 import { updateServiceFx, clearStore } from '@/app/project/[id]/store';
@@ -39,7 +39,7 @@ export const ProjectCanvas = ({ projectId }: { projectId: string }) => {
             type: 'service',
             data: {
                 label: service.name,
-                status: service.deployment?.taskStatus,
+                status: service.deployment?.taskStatus || DeploymentTaskStatus.UPDATING,
                 image: service.deployment?.config?.image,
                 id: service.id
             },

@@ -27,7 +27,6 @@ export const useServiceNode = (id: string) => {
 
     return {
         handleDeploy,
-        handleStop,
         handleLogs
     }
 }

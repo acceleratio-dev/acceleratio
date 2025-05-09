@@ -21,16 +21,28 @@ export class DockerClient implements IDockerEngineRepository {
         };
     }
 
-    async createService(payload: DeploymentConfig & { deploymentId: string }) {
+    async createService(payload: DeploymentConfig & { deploymentId: string, projectId: string }) {
         const data: ServiceCreateRequest = {
             taskTemplate: {
                 containerSpec: {
                     labels: {
                         "acceleratio.deployment.id": payload.deploymentId,
+                        "acceleratio.project.id": payload.projectId,
                     },
                     image: payload.image,
+                    command: payload.command ? [payload.command] : undefined,
                 },
+                restartPolicy: {
+                    condition: "on-failure",
+                    delay: 5000,
+                    maxAttempts: 3,
+                }
             },
+            mode: {
+                replicated: {
+                    replicas: 1
+                }
+            }
         }
 
         try {
