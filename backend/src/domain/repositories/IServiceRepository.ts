@@ -3,7 +3,7 @@ import { deploymentsTable } from "@/infrastructure/db/orm/schema/deployments";
 import { CreateServiceDto } from "@/application/dto/service/create-service-dto";
 
 export type ServiceWithLatestDeployment = typeof servicesTable.$inferSelect & {
-    latestDeployment: Partial<typeof deploymentsTable.$inferSelect> | null
+    deployment: Partial<typeof deploymentsTable.$inferSelect> | null
 }
 
 export interface IServiceRepository {

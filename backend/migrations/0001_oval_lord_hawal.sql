@@ -1,0 +1,1 @@
+ALTER TABLE "services" ALTER COLUMN "project_id" SET NOT NULL;

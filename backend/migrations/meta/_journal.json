@@ -8,6 +8,13 @@
       "when": 1746373222398,
       "tag": "0000_yellow_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1746711403484,
+      "tag": "0001_oval_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

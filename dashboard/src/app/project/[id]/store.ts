@@ -1,6 +1,6 @@
 "use client"
 import { servicesApi } from "@/api/services"
-import { Service } from "@/api/types"
+import { DeploymentStatus, DeploymentTaskStatus, Service } from "@/api/types"
 import { createEffect, createEvent, createStore } from "effector"
 import { toast } from "sonner"
 interface Store {
@@ -19,7 +19,9 @@ $canvas.on(setCanvasData, (state, data) => ({
     ...data
 }))
 
-export const updateServiceFx = createEffect(servicesApi.update)
+export const updateServiceFx = createEffect((params: { serviceId: string, data: Partial<Service> }) =>
+    servicesApi.update(params.serviceId, params.data)
+)
 $canvas.on(updateServiceFx.doneData, (state, { data }) => {
     if (!data.success) {
         toast.error(data.error.message)
@@ -30,7 +32,16 @@ $canvas.on(updateServiceFx.doneData, (state, { data }) => {
 
     return {
         ...state,
-        services: [...state.services.filter(service => service.id !== project.id), project]
+        services: state.services.map(service => {
+            if (service.id === project.id) {
+                return {
+                    ...service,
+                    ...project
+                }
+            }
+
+            return service
+        })
     }
 })
 
@@ -51,3 +62,34 @@ $canvas.on(clearStore, () => ({
     project_id: null,
     services: []
 }))
+
+export const updateServiceStatus = createEvent<{ serviceId: string, status: DeploymentTaskStatus }>()
+$canvas.on(updateServiceStatus, (state, { serviceId, status }) => ({
+    ...state,
+    services: state.services.map(service => service.id === serviceId ? { ...service, deployment: { ...service.deployment, taskStatus: status } } : service)
+}))
+
+export const updateServiceConfigFx = createEffect(async (params: { serviceId: string, data: Partial<Service['deployment']['config']> }) => {
+    try {
+        const { data } = await servicesApi.updateConfig(params.serviceId, params.data)
+        if (!data.success) {
+            throw new Error(data.error.message)
+        }
+        toast.success("Service config updated successfully")
+        return params.serviceId
+    } catch (error) {
+        toast.error("Failed to update service config")
+        return null
+    }
+})
+
+$canvas.on(updateServiceConfigFx.doneData, (state, serviceId) => {
+    return {
+        ...state,
+        services: state.services.map(
+            service => service.id === serviceId ? {
+                ...service, deployment: { ...service.deployment, status: DeploymentStatus.DRAFT, taskStatus: undefined }
+            } : service
+        )
+    }
+})

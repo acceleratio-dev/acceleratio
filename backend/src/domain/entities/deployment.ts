@@ -13,4 +13,5 @@ export enum DeploymentTaskStatus {
 
 export interface DeploymentConfig {
     image: string;
+    command?: string;
 }

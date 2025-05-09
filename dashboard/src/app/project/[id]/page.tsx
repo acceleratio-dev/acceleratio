@@ -5,8 +5,9 @@ import { ServiceDetails } from '@/components/canvas/service-details';
 import { notFound } from 'next/navigation';
 
 
-export default async function ProjectPage({ params }: { params: { id: string } }) {
+export default async function ProjectPage({ params }: { params: any }) {
     const { id } = await params
+
     const { data } = await projectsApi.getProjectById(id)
 
     if (!data.success) {

@@ -3,15 +3,16 @@
 import { useUnit } from "effector-react"
 import { $serviceDetails, openServiceDetails } from "../service-details/store"
 import { useServiceNode } from "./use-service-node"
-import { ServiceHeader, ServiceStatusBadge, ServiceStatus } from "./service-header"
+import { ServiceHeader, ServiceStatusBadge } from "./service-header"
 import { ServiceActions } from "./service-action"
+import { DeploymentTaskStatus } from "@/api/types"
 
 interface ServiceNodeProps {
     data: {
         id: string
         label: string
-        image?: string
-        status?: ServiceStatus
+        image: string
+        status: DeploymentTaskStatus
     }
 }
 
@@ -20,12 +21,12 @@ export const ServiceNode = ({ data }: ServiceNodeProps) => {
     const {
         id,
         label,
-        image = "",
-        status = "created",
+        image,
+        status,
     } = data
 
     const isEditing = service_id === id
-    const { handleDeploy, handleStop, handleLogs } = useServiceNode(id)
+    const { handleDeploy, handleLogs } = useServiceNode(id)
 
     return (
         <div
@@ -49,10 +50,9 @@ export const ServiceNode = ({ data }: ServiceNodeProps) => {
                 </div>
             </div>
             <ServiceActions
-                id={id}
+                status={status}
                 isEditing={isEditing}
                 onDeploy={handleDeploy}
-                onStop={handleStop}
                 onLogs={handleLogs}
             />
         </div>

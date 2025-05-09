@@ -22,17 +22,41 @@ export interface Project {
     updatedAt: string;
 }
 
+export interface Deployment {
+    id: string;
+    name: string;
+    status: DeploymentStatus;
+    taskStatus?: DeploymentTaskStatus;
+    config: {
+        image: string;
+        command?: string;
+    }
+    createdAt: string;
+}
+
+export enum DeploymentStatus {
+    ACTIVE = "active",
+    FINISHED = "finished",
+    DRAFT = "draft",
+}
+
+export enum DeploymentTaskStatus {
+    PULLING = 'pulling',
+    PENDING = 'pending',
+    RUNNING = 'running',
+    FAILED = 'failed',
+
+    // Additional statuses only for frontend to display when the latest deployment is draft and deployment task status not exists
+    UPDATING = 'updating',
+}
+
 export interface Service {
     id: string;
     projectId: string;
     name: string;
-    dockerContainerId: string;
-    image: string;
+    deployment: Deployment;
     position_x: number;
     position_y: number;
-    status: string;
     createdAt: string;
     updatedAt: string;
-    cpu?: number;
-    ram?: string;
 }

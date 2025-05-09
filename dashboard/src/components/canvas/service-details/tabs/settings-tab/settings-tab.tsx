@@ -8,12 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider } from "react-hook-form"
-import { updateServiceFx } from "@/app/project/[id]/store"
-import { Globe, GlobeLock, Cpu, Server, ImageIcon, Terminal, Save } from "lucide-react"
-import { toast } from "sonner"
+import { Globe, GlobeLock } from "lucide-react"
 import { AddDomainDialog } from "./add-domain-dialog"
 import { Volume, VolumesManager } from "./volumes-manager"
 import { ResourcesLimits } from "./resources-limits"
+import { GeneralSettings } from "./general-settings"
+import { Service } from "@/api/types"
 
 const schema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -24,10 +24,9 @@ const schema = z.object({
     ram: z.number().min(0.5).max(32),
 })
 
-export const SettingsTab = ({ service_id }: { service_id: string }) => {
-    const [saving, setSaving] = useState(false)
+export const SettingsTab = ({ config, serviceId }: { config: Service['deployment']['config'], serviceId: Service['id'] }) => {
     const [volumes, setVolumes] = useState<Volume[]>([])
-    
+
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -36,81 +35,13 @@ export const SettingsTab = ({ service_id }: { service_id: string }) => {
         },
     })
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
-        setSaving(true)
-        try {
-            await updateServiceFx({
-                id: service_id,
-                name: data.name,
-                image: data.image,
-                cpu: data.cpu,
-                ram: data.ram.toString(),
-            })
-            toast.success("Settings updated", {
-                description: "Your service settings have been saved successfully.",
-            })
-        } catch (error) {
-            toast.error("Failed to update service settings.", {
-                description: "Please try again.",
-            })
-        } finally {
-            setSaving(false)
-        }
-    }
-
     return (
         <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6 max-w-3xl mx-auto">
-                {/* General Settings */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-xl flex items-center">
-                            <Server className="mr-2 h-5 w-5 text-neutral-400" />
-                            General Settings
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="text-sm font-medium">
-                                Service Name
-                            </Label>
-                            <Input id="name" className="transition-all focus-visible:ring-offset-2" {...methods.register("name")} />
-                            {methods.formState.errors.name && <p className="text-xs text-red-500 mt-1">{methods.formState.errors.name.message}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="image" className="text-sm font-medium">
-                                Docker Image
-                            </Label>
-                            <div className="relative">
-                                <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-                                <Input
-                                    id="image"
-                                    placeholder="nginx:latest"
-                                    className="pl-10 transition-all focus-visible:ring-offset-2"
-                                    {...methods.register("image")}
-                                />
-                            </div>
-                            {methods.formState.errors.image && <p className="text-xs text-red-500 mt-1">{methods.formState.errors.image.message}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="command" className="text-sm font-medium">
-                                Startup Command
-                            </Label>
-                            <div className="relative">
-                                <Terminal className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-                                <Input
-                                    id="command"
-                                    placeholder="Example: nginx -g 'daemon off;'"
-                                    className="pl-10 transition-all focus-visible:ring-offset-2"
-                                    {...methods.register("command")}
-                                />
-                            </div>
-                            {methods.formState.errors.command && <p className="text-xs text-red-500 mt-1">{methods.formState.errors.command.message}</p>}
-                        </div>
-                    </CardContent>
-                </Card>
+            <form className="space-y-6 max-w-3xl mx-auto">
+                <GeneralSettings defaultValues={{
+                    image: config.image,
+                    command: config.command
+                }} serviceId={serviceId} />
 
                 {/* Domains */}
                 <Card>
@@ -138,14 +69,6 @@ export const SettingsTab = ({ service_id }: { service_id: string }) => {
                 <ResourcesLimits />
 
                 <VolumesManager volumes={volumes} onVolumesChange={setVolumes} />
-
-                {/* Save Button */}
-                <Button type="submit" className="w-full transition-all relative overflow-hidden group" disabled={saving}>
-                    <span className="flex items-center justify-center gap-2">
-                        <Save className={`h-4 w-4 ${saving ? "animate-spin" : "group-hover:animate-pulse"}`} />
-                        {saving ? "Saving changes..." : "Save changes"}
-                    </span>
-                </Button>
             </form>
         </FormProvider>
     )

@@ -1,7 +1,8 @@
 import { ServiceService } from "@/application/services/service-service"
-import { Hono, type Context } from "hono"
+import { Hono } from "hono"
 import type { UpgradeWebSocket } from "hono/ws"
-import type { WSContext, WSMessageReceive } from "hono/ws"
+import type { WSContext } from "hono/ws"
+import { ServiceWebsocketMessage } from "./types"
 
 interface ConnectionInfo {
     ws: WSContext
@@ -10,33 +11,15 @@ interface ConnectionInfo {
 }
 
 const activeConnections = new Map<string, Set<ConnectionInfo>>()
-const PING_INTERVAL = 30000
-const PONG_TIMEOUT = 10000
 
-const cleanupDeadConnections = () => {
-    const now = Date.now()
-    activeConnections.forEach((connections, projectId) => {
-        connections.forEach(conn => {
-            if (now - conn.lastPing > PONG_TIMEOUT) {
-                connections.delete(conn)
-                conn.ws.close()
-            }
-        })
-        if (connections.size === 0) {
-            activeConnections.delete(projectId)
-        }
-    })
-}
 
-setInterval(cleanupDeadConnections, 60000)
-
-export const serviceWebsocketBroadcastMessage = (message: string, projectId: string) => {
+export const serviceWebsocketBroadcastMessage = (message: ServiceWebsocketMessage, projectId: string) => {
     const connections = activeConnections.get(projectId)
     if (!connections) return
 
     connections.forEach(conn => {
         if (conn.ws.readyState === 1) {
-            conn.ws.send(message)
+            conn.ws.send(JSON.stringify(message))
         }
     })
 }
@@ -66,7 +49,8 @@ export const serviceWebsocket = (upgradeWebSocket: UpgradeWebSocket) => {
                             return
                         }
 
-                        const services = await ServiceService.getServices(projectId)
+                        const services = await ServiceService.getProjectServices(projectId)
+
                         const connInfo: ConnectionInfo = {
                             ws,
                             projectId,
@@ -79,34 +63,9 @@ export const serviceWebsocket = (upgradeWebSocket: UpgradeWebSocket) => {
                         activeConnections.get(projectId)!.add(connInfo)
 
                         ws.send(JSON.stringify({ services }))
-
-                        const pingInterval = setInterval(() => {
-                            if (ws.readyState === 1) {
-                                ws.send(JSON.stringify({ type: 'ping' }))
-                            } else {
-                                clearInterval(pingInterval)
-                            }
-                        }, PING_INTERVAL)
                     } catch (error) {
                         console.error(error)
                         ws.close()
-                    }
-                },
-                onMessage(evt: MessageEvent<WSMessageReceive>, ws: WSContext) {
-                    try {
-                        const message = JSON.parse(evt.data.toString())
-                        if (message.type === 'pong') {
-                            const connections = activeConnections.get(projectId)
-                            if (connections) {
-                                connections.forEach(conn => {
-                                    if (conn.ws === ws) {
-                                        conn.lastPing = Date.now()
-                                    }
-                                })
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Error parsing message:', e)
                     }
                 },
                 onClose(evt: CloseEvent, ws: WSContext) {

@@ -11,6 +11,7 @@ import { $serviceDetails, closeServiceDetails } from "./store"
 import { EnvironmentTab } from "./tabs/environment-tab"
 import { SettingsTab } from "./tabs/settings-tab"
 import { DangerZone } from "./tabs/danger-zone"
+import { DeploymentsTab } from "./tabs/deployments-tab"
 
 export const ServiceDetails = () => {
     const { open, service_id } = useUnit($serviceDetails)
@@ -36,8 +37,10 @@ export const ServiceDetails = () => {
     //     return () => window.removeEventListener('keydown', handleEscape)
     // }, [open])
 
+    if (!service) return null
+
     return (
-        <div className={`${open ? "right-0" : "right-[-700px]"} min-w-[700px] max-w-[700px] absolute top-14 bottom-0 bg-neutral-900/70 backdrop-blur-sm border-l border-t rounded-tl-xl flex flex-col justify-between transition-all duration-200 ease-in-out`}>
+        <div className={`${open ? "right-0" : "right-[-700px]"} min-w-[700px] max-w-[700px] absolute top-16 bottom-0 bg-neutral-900/70 backdrop-blur-sm border-l border-t rounded-tl-xl flex flex-col justify-between transition-all`}>
             <div>
                 <div className="flex justify-between px-6 pt-6">
                     <div className="flex items-center gap-2">
@@ -54,15 +57,16 @@ export const ServiceDetails = () => {
                 <div className="px-6">
                     <EnhancedTabs
                         className="py-4"
-                        tabs={["Settings", "Environment", "Danger Zone"]}
+                        tabs={["Deployments", "Settings", "Environment", "Danger Zone"]}
                         activeTab={activeTab}
                         onChange={(index) => setActiveTab(index)}
                     />
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto px-4 pb-6">
-                    {activeTab === 0 && <SettingsTab service_id={service_id} />}
-                    {activeTab === 1 && <EnvironmentTab service_id={service_id} />}
-                    {activeTab === 2 && <DangerZone />}
+                    {activeTab === 0 && <DeploymentsTab service_id={service_id} />}
+                    {activeTab === 1 && <SettingsTab config={service?.deployment.config} serviceId={service_id} />}
+                    {activeTab === 2 && <EnvironmentTab service_id={service_id} />}
+                    {activeTab === 3 && <DangerZone />}
                 </div>
             </div>
             {/* <div className="border-t p-4"> */}
