@@ -16,7 +16,7 @@ export default function DashboardIndex() {
                 </div>
 
                 <div className="flex">
-                    <Link href="/dashboard/projects/1" className="block hover:bg-slate-200 transition-all bg-slate-100 w-[340px] border rounded-md shadow-sm p-3 relative">
+                    <Link href="/dashboard/projects/1" className="block hover:bg-slate-50 transition-all bg-white w-[340px] border rounded-md shadow-sm p-3 relative">
                         <div className="absolute top-2 right-2 bg-emerald-600 text-white px-2 font-medium py-1 rounded-md text-xs">
                             Online
                         </div>
