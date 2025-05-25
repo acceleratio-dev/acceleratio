@@ -30,4 +30,10 @@ export class Server {
   @Field(() => String)
   @prop()
   nodeId: string;
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
 }

@@ -50,7 +50,7 @@ export const ServersTable = () => {
               <TableCell>{node.ip}</TableCell>
               <TableCell>{node.status}</TableCell>
               <TableCell>Yes</TableCell>
-              <TableCell>-</TableCell>
+              <TableCell>{new Date(node.createdAt).toLocaleString('en-US')}</TableCell>
               <TableCell>
                 <Button size="icon" variant="outline">
                   <MoreHorizontal />

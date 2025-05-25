@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
 export type AuthResponse = {
@@ -48,10 +49,12 @@ export type Query = {
 export type Server = {
   __typename?: 'Server';
   _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTime']['output'];
   ip: Scalars['String']['output'];
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
   status: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type User = {
@@ -65,7 +68,7 @@ export type User = {
 export type GetNodesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNodesQuery = { __typename?: 'Query', getNodes: Array<{ __typename?: 'Server', _id: string, name: string, ip: string, status: string }> };
+export type GetNodesQuery = { __typename?: 'Query', getNodes: Array<{ __typename?: 'Server', _id: string, name: string, ip: string, status: string, createdAt: any }> };
 
 
 export const GetNodesDocument = gql`
@@ -75,6 +78,7 @@ export const GetNodesDocument = gql`
     name
     ip
     status
+    createdAt
   }
 }
     `;

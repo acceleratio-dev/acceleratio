@@ -16,6 +16,7 @@ export const InitSwarmContainer = () => {
     const { data } = await initSwarm();
     if (data?.initSwarm) {
       toast.success('Cluster initialized');
+      window.location.reload();
     } else {
       toast.error(
         'Failed to initialize cluster, please check if docker is running and try again',

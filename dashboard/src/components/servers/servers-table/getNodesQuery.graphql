@@ -4,5 +4,6 @@ query GetNodes {
     name
     ip
     status
+    createdAt
   }
 }

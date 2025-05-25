@@ -26,21 +26,7 @@ export class DockerService {
   }
   private getPrimaryIP() {
     const interfaces = networkInterfaces();
-
-    for (const name of Object.keys(interfaces)) {
-      for (const iface of interfaces[name]) {
-        if (
-          iface.family === 'IPv4' &&
-          !iface.internal &&
-          iface.address !== '127.0.0.1'
-        ) {
-          console.log(`Using interface ${name}: ${iface.address}`);
-          return iface.address;
-        }
-      }
-    }
-
-    return '127.0.0.1';
+    return interfaces?.eth0?.[0]?.address || '127.0.0.1';
   }
 
   async initSwarm(): Promise<string | null> {
@@ -90,13 +76,7 @@ export class DockerService {
   }
 
   async getNodes() {
-    const nodes = await this.sdk.listNodes();
-
-    return nodes.map((node) => ({
-      id: node.ID,
-      name: node.Description.Hostname,
-      ip: node.Status.Addr,
-      status: node.Status.State,
-    }));
+    const nodes = await this.serverModel.find();
+    return nodes;
   }
 }
