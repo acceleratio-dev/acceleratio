@@ -53,7 +53,7 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
                                     <TooltipTrigger asChild>
                                         <Link 
                                             href={link.href} 
-                                            className={`block p-2 rounded-md transition-all border border-transparent group relative ${pathname === link.href ? 'bg-white border-slate-300 shadow-sm' : 'hover:bg-slate-300/60'}`}
+                                            className={`block p-2 rounded-md transition-all border border-transparent group relative ${pathname === link.href ? 'bg-white border-slate-400/40 shadow-sm' : 'hover:bg-slate-300/60'}`}
                                         >
                                             <link.icon size={'auto'} className="stroke-slate-700 group-hover:stroke-slate-900" />
                                         </Link>

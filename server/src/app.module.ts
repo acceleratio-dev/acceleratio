@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { DockerModule } from './docker/docker.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
     }),
     AuthModule,
     UserModule,
+    DockerModule,
   ],
 })
 export class AppModule {}

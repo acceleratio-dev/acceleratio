@@ -12,11 +12,22 @@ input LoginInput {
 }
 
 type Mutation {
+  initSwarm: Boolean!
   login(loginInput: LoginInput!): AuthResponse!
 }
 
 type Query {
+  getNodes: [Server!]!
   getUsers: [User!]!
+  isSwarmInitialized: Boolean!
+}
+
+type Server {
+  _id: ID!
+  ip: String!
+  name: String!
+  nodeId: String!
+  status: String!
 }
 
 type User {

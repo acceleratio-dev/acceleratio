@@ -1,0 +1,8 @@
+query GetNodes {
+  getNodes {
+    _id
+    name
+    ip
+    status
+  }
+}

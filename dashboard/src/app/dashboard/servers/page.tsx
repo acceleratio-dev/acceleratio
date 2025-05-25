@@ -1,58 +1,38 @@
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { Button } from '@/components/ui/button';
-import { HardDriveDownload, MoreHorizontal, Plus } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { HardDriveDownload, Plus, RefreshCcw } from 'lucide-react';
 import { PageHeader } from '@/components/layouts/PageHeader';
+import { ServersTable } from '@/components/servers/servers-table';
+import { client } from '@/lib/apolloClient';
+import { IsSwarmInitializedDocument } from './_generated/isSwarmInitializedQuery.generated';
+import { InitSwarmContainer } from '@/components/servers/init-swarm-container';
 
-const headers = [
-  'Server',
-  'IP',
-  'Status',
-  'Installation Completed',
-  'Created At',
-  '',
-];
+export default async function ServersPage() {
+  const { data, error } = await client.query({
+    query: IsSwarmInitializedDocument,
+  });
 
-export default function ServersPage() {
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!data.isSwarmInitialized) {
+    return (
+      <DashboardLayout>
+        <PageHeader title="Servers" />
+        <div className="wrapper">
+          <InitSwarmContainer />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <PageHeader title="Servers" />
       <div className="wrapper flex gap-4">
         <div className="w-full">
-          <div className="border rounded-md shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="!bg-slate-200/70">
-                <TableRow>
-                  {headers.map((header) => (
-                    <TableHead className="text-slate-600 h-9" key={header}>
-                      {header}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Server name</TableCell>
-                  <TableCell>0.0.0.0</TableCell>
-                  <TableCell>Running</TableCell>
-                  <TableCell>Yes</TableCell>
-                  <TableCell>2025-01-01 12:00:00</TableCell>
-                  <TableCell>
-                    <Button size="icon" variant="outline">
-                      <MoreHorizontal />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
+          <ServersTable />
         </div>
         <div>
           <div className="w-[280px] border rounded-md shadow-sm">
@@ -60,6 +40,10 @@ export default function ServersPage() {
               Actions
             </div>
             <div className="p-4 space-y-2">
+              <Button variant="outline" className="w-full">
+                <RefreshCcw />
+                Refresh all statuses
+              </Button>
               <Button variant="outline" className="w-full">
                 <Plus />
                 Add new server
