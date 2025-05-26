@@ -23,6 +23,11 @@ export type AuthResponse = {
   accessToken: Scalars['String']['output'];
 };
 
+export type CreateProjectInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -30,8 +35,14 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createProject: Project;
   initSwarm: Scalars['Boolean']['output'];
   login: AuthResponse;
+};
+
+
+export type MutationCreateProjectArgs = {
+  createProjectInput: CreateProjectInput;
 };
 
 
@@ -39,11 +50,27 @@ export type MutationLoginArgs = {
   loginInput: LoginInput;
 };
 
+export type Project = {
+  __typename?: 'Project';
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getNodes: Array<Server>;
+  getProjectById: Project;
+  getProjects: Array<Project>;
   getUsers: Array<User>;
   isSwarmInitialized: Scalars['Boolean']['output'];
+};
+
+
+export type QueryGetProjectByIdArgs = {
+  id: Scalars['String']['input'];
 };
 
 export type Server = {

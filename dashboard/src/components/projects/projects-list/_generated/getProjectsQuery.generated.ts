@@ -92,39 +92,51 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
-export type InitSwarmMutationVariables = Exact<{ [key: string]: never; }>;
+export type GetProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type InitSwarmMutation = { __typename?: 'Mutation', initSwarm: boolean };
+export type GetProjectsQuery = { __typename?: 'Query', getProjects: Array<{ __typename?: 'Project', _id: string, name: string, description: string, updatedAt: any }> };
 
 
-export const InitSwarmDocument = gql`
-    mutation InitSwarm {
-  initSwarm
+export const GetProjectsDocument = gql`
+    query GetProjects {
+  getProjects {
+    _id
+    name
+    description
+    updatedAt
+  }
 }
     `;
-export type InitSwarmMutationFn = Apollo.MutationFunction<InitSwarmMutation, InitSwarmMutationVariables>;
 
 /**
- * __useInitSwarmMutation__
+ * __useGetProjectsQuery__
  *
- * To run a mutation, you first call `useInitSwarmMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useInitSwarmMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetProjectsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [initSwarmMutation, { data, loading, error }] = useInitSwarmMutation({
+ * const { data, loading, error } = useGetProjectsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useInitSwarmMutation(baseOptions?: Apollo.MutationHookOptions<InitSwarmMutation, InitSwarmMutationVariables>) {
+export function useGetProjectsQuery(baseOptions?: Apollo.QueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<InitSwarmMutation, InitSwarmMutationVariables>(InitSwarmDocument, options);
+        return Apollo.useQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options);
       }
-export type InitSwarmMutationHookResult = ReturnType<typeof useInitSwarmMutation>;
-export type InitSwarmMutationResult = Apollo.MutationResult<InitSwarmMutation>;
-export type InitSwarmMutationOptions = Apollo.BaseMutationOptions<InitSwarmMutation, InitSwarmMutationVariables>;
+export function useGetProjectsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options);
+        }
+export function useGetProjectsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProjectsQuery, GetProjectsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetProjectsQuery, GetProjectsQueryVariables>(GetProjectsDocument, options);
+        }
+export type GetProjectsQueryHookResult = ReturnType<typeof useGetProjectsQuery>;
+export type GetProjectsLazyQueryHookResult = ReturnType<typeof useGetProjectsLazyQuery>;
+export type GetProjectsSuspenseQueryHookResult = ReturnType<typeof useGetProjectsSuspenseQuery>;
+export type GetProjectsQueryResult = Apollo.QueryResult<GetProjectsQuery, GetProjectsQueryVariables>;

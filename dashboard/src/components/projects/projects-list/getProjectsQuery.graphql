@@ -1,0 +1,8 @@
+query GetProjects {
+  getProjects {
+    _id
+    name
+    description
+    updatedAt
+  }
+}

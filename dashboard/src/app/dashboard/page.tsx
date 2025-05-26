@@ -1,38 +1,16 @@
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { PageHeader } from '@/components/layouts/PageHeader';
-import { Globe, Server, UserRound } from 'lucide-react';
-import Link from 'next/link';
+import { CreateProject } from '@/components/projects/create-project';
+import { ProjectsList } from '@/components/projects/projects-list';
 
 export default function DashboardIndex() {
   return (
     <DashboardLayout>
       <PageHeader title="Projects list" />
       <div className="wrapper">
+        <CreateProject />
         <div className="flex">
-          <Link
-            href="/dashboard/projects/1"
-            className="block hover:bg-slate-50 transition-all bg-white w-[340px] border rounded-md shadow-sm p-3.5 relative"
-          >
-            <div className="absolute top-3 right-3 bg-emerald-600 text-white px-2 font-medium py-1 rounded-md text-xs">
-              Running
-            </div>
-            <div className="font-medium">Project title</div>
-            <div className="text-sm text-gray-500 h-10">
-              Project description
-            </div>
-            <div className="text-sm font-medium flex justify-between">
-              <div className="flex items-center gap-1">
-                <UserRound size={14} className="stroke-slate-700" />1 User
-              </div>
-              <div className="flex items-center gap-1">
-                <Server size={14} className="stroke-slate-700" />
-                12 environments
-              </div>
-              <div className="flex items-center gap-1">
-                <Globe size={14} className="stroke-slate-700" />3 domains
-              </div>
-            </div>
-          </Link>
+          <ProjectsList />
         </div>
       </div>
     </DashboardLayout>
