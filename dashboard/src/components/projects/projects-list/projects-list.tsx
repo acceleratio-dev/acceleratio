@@ -6,9 +6,10 @@ import {
   GetProjectsQuery,
   useGetProjectsQuery,
 } from './_generated/getProjectsQuery.generated';
+import { CreateProject } from '../create-project';
 
 export const ProjectsList = () => {
-  const { data, loading } = useGetProjectsQuery();
+  const { data, loading, refetch } = useGetProjectsQuery();
 
   return (
     <>
@@ -16,6 +17,7 @@ export const ProjectsList = () => {
       {data?.getProjects.map((project) => (
         <ProjectItem key={project._id} project={project} />
       ))}
+      <CreateProject refetch={refetch} />
     </>
   );
 };
@@ -27,7 +29,7 @@ const ProjectItem = ({
 }) => {
   return (
     <Link
-      href="/dashboard/projects/1"
+      href={`/dashboard/projects/${project._id}`}
       className="block hover:bg-slate-50 transition-all bg-white w-[340px] border rounded-md shadow-sm p-3.5 relative"
     >
       <div className="absolute top-3 right-3 bg-emerald-600 text-white px-2 font-medium py-1 rounded-md text-xs">

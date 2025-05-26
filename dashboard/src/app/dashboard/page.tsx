@@ -1,6 +1,5 @@
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { PageHeader } from '@/components/layouts/PageHeader';
-import { CreateProject } from '@/components/projects/create-project';
 import { ProjectsList } from '@/components/projects/projects-list';
 
 export default function DashboardIndex() {
@@ -8,8 +7,7 @@ export default function DashboardIndex() {
     <DashboardLayout>
       <PageHeader title="Projects list" />
       <div className="wrapper">
-        <CreateProject />
-        <div className="flex">
+        <div className="flex gap-4 flex-wrap">
           <ProjectsList />
         </div>
       </div>
