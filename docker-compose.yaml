@@ -1,15 +1,5 @@
 version: '3.8'
 
-volumes:
-  mongo_data:
-  traefik-certificates:
-
-networks:
-  traefik-public:
-    external: true
-  app-network:
-    driver: overlay
-
 services:
   traefik:
     image: traefik:v3.0
@@ -18,7 +8,6 @@ services:
       - '443:443'
     command:
       - --providers.docker=true
-      - --providers.docker.swarmMode=true
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=traefik-public
       - --entrypoints.web.address=:80
@@ -31,10 +20,7 @@ services:
       - traefik-certificates:/letsencrypt
     networks:
       - traefik-public
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
+    restart: unless-stopped
 
   server:
     container_name: server
@@ -48,6 +34,8 @@ services:
       - NODE_ENV=production
       - IP=${IP}
       - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DATABASE}?authSource=admin&directConnection=true
+    networks:
+      - app-network
     restart: unless-stopped
     depends_on:
       mongo:
@@ -60,8 +48,6 @@ services:
       dockerfile: Dockerfile
       args:
         - API_URL=http://server:8080
-    ports:
-      - '3000:3000'
     environment:
       - NODE_ENV=production
       - API_URL=http://server:8080
@@ -69,19 +55,18 @@ services:
       - app-network
       - traefik-public
     restart: unless-stopped
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.server.rule=Host(`${DOMAIN}`)
-        - traefik.http.routers.server.entrypoints=web
-        - traefik.http.routers.server.middlewares=redirect-to-https
-        - traefik.http.routers.server-secure.rule=Host(`${DOMAIN}`)
-        - traefik.http.routers.server-secure.entrypoints=websecure
-        - traefik.http.routers.server-secure.tls.certresolver=letsencrypt
-        - traefik.http.services.server.loadbalancer.server.port=3000
-        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-        - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
-        - traefik.docker.network=traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.dashboard.entrypoints=web
+      - traefik.http.routers.dashboard.middlewares=redirect-to-https
+      - traefik.http.routers.dashboard-secure.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.dashboard-secure.entrypoints=websecure
+      - traefik.http.routers.dashboard-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.dashboard.loadbalancer.server.port=3000
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+      - traefik.docker.network=traefik-public
     depends_on:
       - server
 
@@ -95,6 +80,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+    networks:
+      - app-network
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
@@ -102,3 +89,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
+volumes:
+  mongo_data:
+  traefik-certificates:
+
+networks:
+  traefik-public:
+    driver: bridge
+  app-network:
+    driver: bridge
