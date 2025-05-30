@@ -1,5 +1,15 @@
 version: '3.8'
 
+volumes:
+  mongo_data:
+  traefik-certificates:
+
+networks:
+  traefik-public:
+    external: true
+  app-network:
+    driver: overlay
+
 services:
   traefik:
     image: traefik:v3.0
@@ -92,13 +102,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
-volumes:
-  mongo_data:
-  traefik-certificates:
-
-networks:
-  traefik-public:
-    external: true
-  app-network:
-    driver: overlay
