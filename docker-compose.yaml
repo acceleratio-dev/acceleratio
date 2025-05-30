@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:v3.4
     container_name: traefik
     ports:
       - '80:80'
@@ -16,6 +16,8 @@ services:
       - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
       - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
       - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --log.level=INFO
+      - --api.dashboard=false
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certificates:/letsencrypt
