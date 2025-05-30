@@ -51,10 +51,11 @@ export class DockerService {
       const ip = this.getPrimaryIP();
       const port = 2377;
 
+      console.log(process.env.IP);
       const nodeId = await this.sdk.swarmInit({
         ForceNewCluster: false,
-        ListenAddr: `${ip}:${port}`,
-        AdvertiseAddr: `${process.env.IP || '0.0.0.0'}:${port}`,
+        ListenAddr: `0.0.0.0:${port}`,
+        AdvertiseAddr: `${process.env.IP || ip}:${port}`,
       });
 
       const node = await this.sdk.getNode(nodeId).inspect();
