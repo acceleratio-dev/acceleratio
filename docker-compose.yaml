@@ -98,6 +98,6 @@ volumes:
 
 networks:
   traefik-public:
-    driver: overlay
+    driver: bridge
   app-network:
     driver: bridge
