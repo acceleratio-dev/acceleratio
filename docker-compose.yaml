@@ -55,6 +55,9 @@ services:
     environment:
       - NODE_ENV=production
       - API_URL=http://server:8080
+    networks:
+      - app-network
+      - traefik-public
     restart: unless-stopped
     deploy:
       labels:
@@ -97,3 +100,5 @@ volumes:
 networks:
   traefik-public:
     external: true
+  app-network:
+    driver: overlay
