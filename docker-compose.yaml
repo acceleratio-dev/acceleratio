@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  server:
+    user: root
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DATABASE}?authSource=admin&directConnection=true
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://server:8080
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://server:8080
+    restart: unless-stopped
+    depends_on:
+      - server
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongo_data:

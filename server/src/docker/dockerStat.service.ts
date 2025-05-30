@@ -11,7 +11,9 @@ export class DockerStatService
   private readonly sdk: Docker;
 
   constructor() {
-    this.sdk = new Docker();
+    this.sdk = new Docker({
+      socketPath: '/var/run/docker.sock',
+    });
   }
 
   async onApplicationBootstrap() {

@@ -15,7 +15,9 @@ export class DockerService {
     @InjectModel(Server)
     private readonly serverModel: ReturnModelType<typeof Server>,
   ) {
-    this.sdk = new Docker();
+    this.sdk = new Docker({
+      socketPath: '/var/run/docker.sock',
+    });
   }
 
   async isSwarmInitialized() {

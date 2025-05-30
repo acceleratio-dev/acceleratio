@@ -6,6 +6,20 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 
+const getApiUrl = () => {
+  if (typeof window === 'undefined') {
+    return process.env.API_URL + '/graphql';
+  }
+  return '/api';
+};
+
+const getWsUrl = () => {
+  if (typeof window === 'undefined') {
+    return process.env.API_URL + '/graphql';
+  }
+  return '/ws';
+};
+
 const authLink = setContext((_, { headers }) => {
   return {
     headers: {
@@ -16,12 +30,12 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/graphql',
+  uri: getApiUrl(),
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080/graphql',
+    url: getWsUrl(),
   }),
 );
 

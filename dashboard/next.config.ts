@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api',
+        destination: `${process.env.API_URL}/graphql`,
+      },
+      {
+        source: '/ws',
+        destination: `${process.env.API_URL}/graphql`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
