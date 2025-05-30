@@ -30,6 +30,7 @@ export class DockerService {
   }
   private getPrimaryIP() {
     const networkInterfaces = os.networkInterfaces();
+    console.log(networkInterfaces);
 
     for (const interfaceName in networkInterfaces) {
       const interfaces = networkInterfaces[interfaceName];
