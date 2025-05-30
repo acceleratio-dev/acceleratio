@@ -1,0 +1,3 @@
+mutation AssignDomain($input: AssignDomainInput!) {
+  assignDomain(input: $input)
+}

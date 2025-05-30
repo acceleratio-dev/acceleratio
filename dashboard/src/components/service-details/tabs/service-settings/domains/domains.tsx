@@ -13,12 +13,22 @@ export const Domains = ({ service }: { service: ServiceWithDeployment }) => {
   return (
     <div className="w-[600px]">
       <ServiceSettingsTitle title="Domains">
-        <AssignDomainDialog />
+        <AssignDomainDialog serviceId={service._id} />
       </ServiceSettingsTitle>
       {domains.length > 0 ? (
-        <div>
+        <div className="space-y-2 mt-4">
           {domains.map((domain) => (
-            <div key={domain.domain}>{domain.domain}</div>
+            <div
+              className="flex items-center justify-between border rounded-md px-4 py-2 bg-slate-50"
+              key={domain.domain}
+            >
+              <div>
+                {domain.domain}
+                {domain.path && `/${domain.path}`}
+                {domain.port && `:${domain.port}`}
+              </div>
+              <div>{domain.status.toLowerCase()}</div>
+            </div>
           ))}
         </div>
       ) : (

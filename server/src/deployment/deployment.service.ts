@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ContainerStatus, Deployment } from './models/deployment.model';
 import { ReturnModelType } from '@typegoose/typegoose';
@@ -12,6 +12,7 @@ export class DeploymentService {
   constructor(
     @InjectModel(Deployment)
     private readonly deploymentModel: ReturnModelType<typeof Deployment>,
+    @Inject(forwardRef(() => DockerService))
     private readonly dockerService: DockerService,
   ) {}
 

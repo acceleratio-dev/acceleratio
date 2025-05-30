@@ -1,7 +1,33 @@
 version: '3.8'
 
 services:
+  traefik:
+    image: traefik:v3.0
+    ports:
+      - '80:80'
+      - '443:443'
+    command:
+      - --providers.docker=true
+      - --providers.docker.swarmMode=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.network=traefik-public
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+    networks:
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
   server:
+    container_name: server
     user: root
     build:
       context: ./server
@@ -18,6 +44,7 @@ services:
         condition: service_healthy
 
   dashboard:
+    container_name: dashboard
     build:
       context: ./dashboard
       dockerfile: Dockerfile
@@ -29,6 +56,19 @@ services:
       - NODE_ENV=production
       - API_URL=http://server:8080
     restart: unless-stopped
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.server.rule=Host(`${DOMAIN}`)
+        - traefik.http.routers.server.entrypoints=web
+        - traefik.http.routers.server.middlewares=redirect-to-https
+        - traefik.http.routers.server-secure.rule=Host(`${DOMAIN}`)
+        - traefik.http.routers.server-secure.entrypoints=websecure
+        - traefik.http.routers.server-secure.tls.certresolver=letsencrypt
+        - traefik.http.services.server.loadbalancer.server.port=3000
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
+        - traefik.docker.network=traefik-public
     depends_on:
       - server
 
@@ -52,3 +92,8 @@ services:
 
 volumes:
   mongo_data:
+  traefik-certificates:
+
+networks:
+  traefik-public:
+    external: true

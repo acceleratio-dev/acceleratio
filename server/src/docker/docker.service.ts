@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import * as Docker from 'dockerode';
 import { Server } from './models/server.model';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { networkInterfaces } from 'os';
 import { CreateDockerServiceInput } from './dto/createDockerService.input';
+import { DeploymentDomainService } from 'src/deployment/deployment-domain.service';
 
 // TODO: move servers to separate module and use this service only for dockerode operations
 @Injectable()
@@ -14,6 +15,8 @@ export class DockerService {
   constructor(
     @InjectModel(Server)
     private readonly serverModel: ReturnModelType<typeof Server>,
+    @Inject(forwardRef(() => DeploymentDomainService))
+    private readonly deploymentDomainService: DeploymentDomainService,
   ) {
     this.sdk = new Docker();
   }
@@ -51,7 +54,6 @@ export class DockerService {
       const ip = this.getPrimaryIP();
       const port = 2377;
 
-      console.log(process.env.IP);
       const nodeId = await this.sdk.swarmInit({
         ForceNewCluster: false,
         ListenAddr: `0.0.0.0:${port}`,
@@ -110,6 +112,11 @@ export class DockerService {
           Labels: {
             'com.acceleratio.deploymentId': input.deploymentId,
             'com.acceleratio.serviceId': input.serviceId,
+            ...(input.config.domains
+              ? await this.deploymentDomainService.generateLabels(
+                  input.config.domains,
+                )
+              : {}),
           },
         },
         Resources: {
@@ -120,7 +127,7 @@ export class DockerService {
         },
       },
     });
-    return service.id;
+    return (await service).id;
   }
 
   async deleteService(containerId: string) {

@@ -17,6 +17,7 @@ query getServiceById($id: String!) {
           domain
           status
           path
+          port
         }
       }
       createdAt
@@ -33,6 +34,7 @@ query getServiceById($id: String!) {
           domain
           status
           path
+          port
         }
       }
       createdAt

@@ -18,6 +18,11 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type AssignDomainInput = {
+  domain: DomainInput;
+  serviceId: Scalars['String']['input'];
+};
+
 export type AuthResponse = {
   __typename?: 'AuthResponse';
   accessToken: Scalars['String']['output'];
@@ -83,13 +88,19 @@ export enum DeploymentStatus {
 
 export type Domain = {
   __typename?: 'Domain';
-  _id: Scalars['ID']['output'];
-  createdAt: Scalars['DateTime']['output'];
   domain: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  port: Scalars['Int']['output'];
   status: DomainStatus;
 };
 
+export type DomainInput = {
+  domain: Scalars['String']['input'];
+  path: InputMaybe<Scalars['String']['input']>;
+  port: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** The status of a domain */
 export enum DomainStatus {
   Verified = 'VERIFIED',
   Verifying = 'VERIFYING'
@@ -102,6 +113,7 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  assignDomain: Scalars['Boolean']['output'];
   createProject: Project;
   createService: Scalars['Boolean']['output'];
   deleteProject: Scalars['Boolean']['output'];
@@ -111,6 +123,11 @@ export type Mutation = {
   stopService: Scalars['Boolean']['output'];
   updateProject: Project;
   updateServiceConfig: Scalars['Boolean']['output'];
+};
+
+
+export type MutationAssignDomainArgs = {
+  input: AssignDomainInput;
 };
 
 

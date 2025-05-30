@@ -254,42 +254,42 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
-export type StartServiceMutationVariables = Exact<{
-  serviceId: Scalars['String']['input'];
+export type AssignDomainMutationVariables = Exact<{
+  input: AssignDomainInput;
 }>;
 
 
-export type StartServiceMutation = { __typename?: 'Mutation', startService: boolean };
+export type AssignDomainMutation = { __typename?: 'Mutation', assignDomain: boolean };
 
 
-export const StartServiceDocument = gql`
-    mutation StartService($serviceId: String!) {
-  startService(serviceId: $serviceId)
+export const AssignDomainDocument = gql`
+    mutation AssignDomain($input: AssignDomainInput!) {
+  assignDomain(input: $input)
 }
     `;
-export type StartServiceMutationFn = Apollo.MutationFunction<StartServiceMutation, StartServiceMutationVariables>;
+export type AssignDomainMutationFn = Apollo.MutationFunction<AssignDomainMutation, AssignDomainMutationVariables>;
 
 /**
- * __useStartServiceMutation__
+ * __useAssignDomainMutation__
  *
- * To run a mutation, you first call `useStartServiceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useStartServiceMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAssignDomainMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAssignDomainMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [startServiceMutation, { data, loading, error }] = useStartServiceMutation({
+ * const [assignDomainMutation, { data, loading, error }] = useAssignDomainMutation({
  *   variables: {
- *      serviceId: // value for 'serviceId'
+ *      input: // value for 'input'
  *   },
  * });
  */
-export function useStartServiceMutation(baseOptions?: Apollo.MutationHookOptions<StartServiceMutation, StartServiceMutationVariables>) {
+export function useAssignDomainMutation(baseOptions?: Apollo.MutationHookOptions<AssignDomainMutation, AssignDomainMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<StartServiceMutation, StartServiceMutationVariables>(StartServiceDocument, options);
+        return Apollo.useMutation<AssignDomainMutation, AssignDomainMutationVariables>(AssignDomainDocument, options);
       }
-export type StartServiceMutationHookResult = ReturnType<typeof useStartServiceMutation>;
-export type StartServiceMutationResult = Apollo.MutationResult<StartServiceMutation>;
-export type StartServiceMutationOptions = Apollo.BaseMutationOptions<StartServiceMutation, StartServiceMutationVariables>;
+export type AssignDomainMutationHookResult = ReturnType<typeof useAssignDomainMutation>;
+export type AssignDomainMutationResult = Apollo.MutationResult<AssignDomainMutation>;
+export type AssignDomainMutationOptions = Apollo.BaseMutationOptions<AssignDomainMutation, AssignDomainMutationVariables>;

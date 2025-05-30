@@ -1,6 +1,6 @@
 import { Field, Float, InputType, ObjectType } from '@nestjs/graphql';
 import { modelOptions, prop } from '@typegoose/typegoose';
-import { Domain, DomainInput } from './domain.model';
+import { Domain } from './domain.model';
 
 @ObjectType()
 @modelOptions({

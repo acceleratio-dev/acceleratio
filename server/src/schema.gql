@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AssignDomainInput {
+  domain: DomainInput!
+  serviceId: String!
+}
+
 type AuthResponse {
   accessToken: String!
 }
@@ -70,7 +75,14 @@ enum DeploymentStatus {
 type Domain {
   domain: String!
   path: String!
+  port: Int!
   status: DomainStatus!
+}
+
+input DomainInput {
+  domain: String!
+  path: String
+  port: Int
 }
 
 """The status of a domain"""
@@ -85,6 +97,7 @@ input LoginInput {
 }
 
 type Mutation {
+  assignDomain(input: AssignDomainInput!): Boolean!
   createProject(createProjectInput: CreateProjectInput!): Project!
   createService(input: CreateServiceInput!): Boolean!
   deleteProject(id: String!): Boolean!
