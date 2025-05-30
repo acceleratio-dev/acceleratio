@@ -53,8 +53,8 @@ export class DockerService {
 
       const nodeId = await this.sdk.swarmInit({
         ForceNewCluster: false,
-        ListenAddr: `0.0.0.0:${port}`,
-        AdvertiseAddr: `${process.env.IP || ip}:${port}`,
+        ListenAddr: `${ip}:${port}`,
+        AdvertiseAddr: `${process.env.IP || '0.0.0.0'}:${port}`,
       });
 
       const node = await this.sdk.getNode(nodeId).inspect();
