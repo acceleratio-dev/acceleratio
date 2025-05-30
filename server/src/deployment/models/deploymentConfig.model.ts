@@ -1,5 +1,6 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, Float, InputType, ObjectType } from '@nestjs/graphql';
 import { modelOptions, prop } from '@typegoose/typegoose';
+import { Domain, DomainInput } from './domain.model';
 
 @ObjectType()
 @modelOptions({
@@ -8,25 +9,29 @@ import { modelOptions, prop } from '@typegoose/typegoose';
   },
 })
 export class DeploymentConfig {
-  @Field(() => Number, { nullable: true })
+  @Field(() => Float, { nullable: true })
   @prop()
   cpuLimit?: number;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => Float, { nullable: true })
   @prop()
   memoryLimit?: number;
 
   @Field(() => String)
   @prop({ required: true })
   image: string;
+
+  @Field(() => [Domain], { nullable: true })
+  @prop({ required: false, default: [] })
+  domains?: Domain[];
 }
 
 @InputType()
 export class DeploymentConfigInput extends DeploymentConfig {
-  @Field(() => Number, { nullable: true })
+  @Field(() => Float, { nullable: true })
   override cpuLimit?: number;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => Float, { nullable: true })
   override memoryLimit?: number;
 
   @Field(() => String)
@@ -35,10 +40,10 @@ export class DeploymentConfigInput extends DeploymentConfig {
 
 @InputType()
 export class DeploymentConfigUpdateInput {
-  @Field(() => Number, { nullable: true })
+  @Field(() => Float, { nullable: true })
   cpuLimit?: number;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => Float, { nullable: true })
   memoryLimit?: number;
 
   @Field(() => String, { nullable: true })

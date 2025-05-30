@@ -1,10 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ServiceWithDeployment } from '../../service-deployments/_generated/getServiceDeploymentsQuery.generated';
+import {
+  GetServiceDeploymentsDocument,
+  ServiceWithDeployment,
+} from '../../service-deployments/_generated/getServiceDeploymentsQuery.generated';
 import { useUpdateServiceConfigMutation } from '../methods/_generated/updateServiceConfigMutation.generated';
 import { toast } from 'sonner';
-import { client } from '@/lib/apolloClient';
+import { GetServiceByIdDocument } from '@/app/dashboard/service/[id]/_generated/getServiceByIdQuery.generated';
+import { ServiceSettingsTitle } from '../components/service-settings-title';
 
 export const GeneralInfo = ({
   service,
@@ -19,10 +23,21 @@ export const GeneralInfo = ({
     },
     onCompleted: () => {
       toast.success('Service config updated');
-      client.refetchQueries({
-        include: ['GetServiceDeployments', 'getServiceById'],
-      });
     },
+    refetchQueries: [
+      {
+        query: GetServiceDeploymentsDocument,
+        variables: {
+          serviceId: service._id,
+        },
+      },
+      {
+        query: GetServiceByIdDocument,
+        variables: {
+          id: service._id,
+        },
+      },
+    ],
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,26 +59,8 @@ export const GeneralInfo = ({
   };
   return (
     <div className="w-[600px] space-y-4">
-      <div className="bg-slate-50 border border-slate-300 rounded-md">
-        <div className="text-sm px-4 py-2 text-slate-900 font-medium border-b border-slate-300">
-          General information
-        </div>
-        <div className="p-4 space-y-4">
-          <div>
-            <Label>Project name</Label>
-            <Input
-              className="bg-white"
-              defaultValue={service.name}
-              name="name"
-            />
-          </div>
-        </div>
-      </div>
-
       <div>
-        <div className="font-medium text-sm mb-1 ml-4">
-          Provider information
-        </div>
+        <ServiceSettingsTitle title="General information" />
         <form
           id="update-service-config-form"
           className="bg-slate-50 p-4 pt-2 border rounded-md space-y-4"
@@ -79,7 +76,7 @@ export const GeneralInfo = ({
             />
           </div>
           <div>
-            <Label>CPU Limit</Label>
+            <Label>CPU Limit (in vCPUs)</Label>
             <Input
               className="bg-white"
               placeholder="CPU Limit"
@@ -88,7 +85,7 @@ export const GeneralInfo = ({
             />
           </div>
           <div>
-            <Label>RAM Limit</Label>
+            <Label>RAM Limit (in MB)</Label>
             <Input
               className="bg-white"
               placeholder="Memory Limit"

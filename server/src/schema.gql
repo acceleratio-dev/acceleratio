@@ -42,21 +42,22 @@ type Deployment {
 }
 
 type DeploymentConfig {
-  cpuLimit: Int
+  cpuLimit: Float
+  domains: [Domain!]
   image: String!
-  memoryLimit: Int
+  memoryLimit: Float
 }
 
 input DeploymentConfigInput {
-  cpuLimit: Int
+  cpuLimit: Float
   image: String!
-  memoryLimit: Int
+  memoryLimit: Float
 }
 
 input DeploymentConfigUpdateInput {
-  cpuLimit: Int
+  cpuLimit: Float
   image: String
-  memoryLimit: Int
+  memoryLimit: Float
 }
 
 """The status of a deployment"""
@@ -64,6 +65,18 @@ enum DeploymentStatus {
   ACTIVE
   DRAFT
   FINISHED
+}
+
+type Domain {
+  domain: String!
+  path: String!
+  status: DomainStatus!
+}
+
+"""The status of a domain"""
+enum DomainStatus {
+  VERIFIED
+  VERIFYING
 }
 
 input LoginInput {

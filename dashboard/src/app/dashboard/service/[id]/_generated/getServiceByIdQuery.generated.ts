@@ -56,21 +56,22 @@ export type Deployment = {
 
 export type DeploymentConfig = {
   __typename?: 'DeploymentConfig';
-  cpuLimit: Maybe<Scalars['Int']['output']>;
+  cpuLimit: Maybe<Scalars['Float']['output']>;
+  domains: Maybe<Array<Domain>>;
   image: Scalars['String']['output'];
-  memoryLimit: Maybe<Scalars['Int']['output']>;
+  memoryLimit: Maybe<Scalars['Float']['output']>;
 };
 
 export type DeploymentConfigInput = {
-  cpuLimit: InputMaybe<Scalars['Int']['input']>;
+  cpuLimit: InputMaybe<Scalars['Float']['input']>;
   image: Scalars['String']['input'];
-  memoryLimit: InputMaybe<Scalars['Int']['input']>;
+  memoryLimit: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type DeploymentConfigUpdateInput = {
-  cpuLimit: InputMaybe<Scalars['Int']['input']>;
+  cpuLimit: InputMaybe<Scalars['Float']['input']>;
   image: InputMaybe<Scalars['String']['input']>;
-  memoryLimit: InputMaybe<Scalars['Int']['input']>;
+  memoryLimit: InputMaybe<Scalars['Float']['input']>;
 };
 
 /** The status of a deployment */
@@ -78,6 +79,20 @@ export enum DeploymentStatus {
   Active = 'ACTIVE',
   Draft = 'DRAFT',
   Finished = 'FINISHED'
+}
+
+export type Domain = {
+  __typename?: 'Domain';
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  domain: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  status: DomainStatus;
+};
+
+export enum DomainStatus {
+  Verified = 'VERIFIED',
+  Verifying = 'VERIFYING'
 }
 
 export type LoginInput = {
@@ -227,7 +242,7 @@ export type GetServiceByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetServiceByIdQuery = { __typename?: 'Query', service: { __typename?: 'ServiceWithDeployment', _id: string, name: string, projectId: string, type: ServiceType, createdAt: any, updatedAt: any, activeDeployment: { __typename?: 'Deployment', status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string } } | null, draftDeployment: { __typename?: 'Deployment', status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string } } | null } };
+export type GetServiceByIdQuery = { __typename?: 'Query', service: { __typename?: 'ServiceWithDeployment', _id: string, name: string, projectId: string, type: ServiceType, createdAt: any, updatedAt: any, activeDeployment: { __typename?: 'Deployment', status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string, cpuLimit: number | null, memoryLimit: number | null } } | null, draftDeployment: { __typename?: 'Deployment', status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string, cpuLimit: number | null, memoryLimit: number | null } } | null } };
 
 
 export const GetServiceByIdDocument = gql`
@@ -244,6 +259,8 @@ export const GetServiceByIdDocument = gql`
       containerStatus
       config {
         image
+        cpuLimit
+        memoryLimit
       }
       createdAt
       updatedAt
@@ -253,6 +270,8 @@ export const GetServiceByIdDocument = gql`
       containerStatus
       config {
         image
+        cpuLimit
+        memoryLimit
       }
       createdAt
       updatedAt

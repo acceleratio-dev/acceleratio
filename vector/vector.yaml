@@ -1,0 +1,33 @@
+api:
+  enabled: false
+
+sources:
+  docker:
+    type: 'docker_logs'
+    include_labels: ['com.acceleratio.deploymentId']
+
+transforms:
+  filter_fields:
+    type: 'remap'
+    inputs: ['docker']
+    source: |
+      . = {
+        "timestamp": .timestamp,
+        "container_id": .container_id,
+        "message": .message,
+        "deploymentId": .label."com.acceleratio.deploymentId",
+        "level": .level,
+        "source": .source
+      }
+
+sinks:
+  mongodb:
+    inputs:
+      - 'filter_fields'
+    type: 'mongodb_metrics'
+    connection_string: 'mongodb://username:password@localhost:27017'
+    database: 'logs_db'
+    collection: 'container_logs'
+    # Optional: Create indexes for better performance
+    create_missing_database: true
+    create_missing_collection: true

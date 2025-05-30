@@ -5,6 +5,7 @@ specifiers:
   '@nestjs/apollo': ^13.1.0
   '@nestjs/cli': ^9.0.0
   '@nestjs/common': ^9.4.3
+  '@nestjs/config': ^4.0.2
   '@nestjs/core': ^9.4.3
   '@nestjs/graphql': ^13.1.0
   '@nestjs/jwt': ^11.0.0
@@ -50,6 +51,7 @@ dependencies:
   '@apollo/server': 4.12.1_graphql@16.11.0
   '@nestjs/apollo': 13.1.0_hrqjc7vktu25czqy2izjtks4oe
   '@nestjs/common': 9.4.3_a7566d5lkqhlcrde563t2xe7r4
+  '@nestjs/config': 4.0.2_kcf5zqt7inlyoroyvocwaw43dy
   '@nestjs/core': 9.4.3_7pncmxllbqp4zbnqpf36vrumau
   '@nestjs/graphql': 13.1.0_3hvngw3b6wh5luiyy4hs5u423e
   '@nestjs/jwt': 11.0.0_@nestjs+common@9.4.3
@@ -1234,6 +1236,19 @@ packages:
       rxjs: 7.8.2
       tslib: 2.5.3
       uid: 2.0.2
+
+  /@nestjs/config/4.0.2_kcf5zqt7inlyoroyvocwaw43dy:
+    resolution: {integrity: sha512-McMW6EXtpc8+CwTUwFdg6h7dYcBUpH5iUILCclAsa+MbCEvC9ZKu4dCHRlJqALuhjLw97pbQu62l4+wRwGeZqA==}
+    peerDependencies:
+      '@nestjs/common': ^10.0.0 || ^11.0.0
+      rxjs: ^7.1.0
+    dependencies:
+      '@nestjs/common': 9.4.3_a7566d5lkqhlcrde563t2xe7r4
+      dotenv: 16.4.7
+      dotenv-expand: 12.0.1
+      lodash: 4.17.21
+      rxjs: 7.8.2
+    dev: false
 
   /@nestjs/core/9.4.3_7pncmxllbqp4zbnqpf36vrumau:
     resolution: {integrity: sha512-Qi63+wi55Jh4sDyaj5Hhx2jOpKqT386aeo+VOKsxnd+Ql9VvkO/FjmuwBGUyzkJt29ENYc+P0Sx/k5LtstNpPQ==}
@@ -2863,6 +2878,18 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv-expand/12.0.1:
+    resolution: {integrity: sha512-LaKRbou8gt0RNID/9RoI+J2rvXsBRPMV7p+ElHlPhcSARbCPDYcYG2s1TIzAfWv4YSgyY5taidWzzs31lNV3yQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      dotenv: 16.4.7
+    dev: false
+
+  /dotenv/16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /dset/3.1.4:
     resolution: {integrity: sha512-2QF/g9/zTaPDc3BjNcVTGoBbXBgYfMTTceLaYcFJ/W9kggFUkhxD/hMEeuLKbugyef9SqAx8cpgwlIP/jinUTA==}

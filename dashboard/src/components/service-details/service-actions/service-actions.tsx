@@ -1,8 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { ServiceWithDeployment } from '../tabs/service-deployments/_generated/getServiceDeploymentsQuery.generated';
+import {
+  GetServiceDeploymentsDocument,
+  ServiceWithDeployment,
+} from '../tabs/service-deployments/_generated/getServiceDeploymentsQuery.generated';
 import { useStartServiceMutation } from './methods/_generated/startServiceMutation.generated';
 import { toast } from 'sonner';
 import { useStopServiceMutation } from './methods/_generated/stopServiceMutation.generated';
+import { GetServiceByIdDocument } from '@/app/dashboard/service/[id]/_generated/getServiceByIdQuery.generated';
 
 export const ServiceActions = ({
   service,
@@ -16,6 +20,20 @@ export const ServiceActions = ({
     onError: (e) => {
       toast.error(e.message);
     },
+    refetchQueries: [
+      {
+        query: GetServiceDeploymentsDocument,
+        variables: {
+          serviceId: service._id,
+        },
+      },
+      {
+        query: GetServiceByIdDocument,
+        variables: {
+          id: service._id,
+        },
+      },
+    ],
   });
   const [stopService, { loading: stopLoading }] = useStopServiceMutation({
     onCompleted: () => {

@@ -1,5 +1,7 @@
 import { DeploymentStatusBadge } from '@/components/service/deployment-status-badge';
 import { useGetServiceDeploymentsQuery } from './_generated/getServiceDeploymentsQuery.generated';
+import moment from 'moment';
+import { ServiceStatusBadge } from '@/components/service/service-status-badge';
 
 export const ServiceDeployments = ({ serviceId }: { serviceId: string }) => {
   const { data, loading, error } = useGetServiceDeploymentsQuery({
@@ -27,9 +29,9 @@ export const ServiceDeployments = ({ serviceId }: { serviceId: string }) => {
           key={deployment._id}
         >
           <div className="w-1/2 border-r h-14 flex items-center">
-            <div className='space-y-0.5'>
+            <div className="space-y-0.5">
               <div className="text-sm font-medium">
-                {new Date(deployment.createdAt).toLocaleString()}
+                {moment(deployment.createdAt).fromNow()}
               </div>
               <div className="text-xs text-slate-700">{deployment._id}</div>
             </div>
@@ -41,7 +43,11 @@ export const ServiceDeployments = ({ serviceId }: { serviceId: string }) => {
             <div className="w-1/4">{deployment.config.image}</div>
             <div className="w-1/4">-</div>
             <div className="w-1/4 text-sm text-slate-700">
-              {deployment?.containerStatus || 'Not running'}
+              {deployment?.containerStatus ? (
+                <ServiceStatusBadge status={deployment.containerStatus} />
+              ) : (
+                'Not running'
+              )}
             </div>
           </div>
         </div>

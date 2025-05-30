@@ -76,7 +76,7 @@ export const DashboardLayout = ({
                     href={link.href}
                     className={`block p-2 rounded-md transition-all border border-transparent group relative ${
                       pathname === link.href
-                        ? 'bg-white border-slate-300/100 shadow-sm'
+                        ? 'bg-white !border-slate-300 shadow-sm'
                         : 'hover:bg-slate-300/60'
                     }`}
                   >

@@ -31,9 +31,9 @@ export const ServiceStatusBadge = ({
 
   return (
     <div
-      className={`px-2.5 inline-flex py-0.5 text-xs font-medium border rounded-full items-center gap-1.5 ${statusToColor[status]}`}
+      className={`px-2.5 inline-flex py-0.5 text-xs border rounded-md font-medium items-center gap-1.5 ${statusToColor[status]}`}
     >
-      <span className="lowercase first-letter:uppercase text-sm">{status}</span>
+      <span className="capitalize">{status.toLowerCase()}</span>
     </div>
   );
 };

@@ -6,11 +6,10 @@ export const ServiceOverview = ({
 }: {
   service: ServiceWithDeployment;
 }) => {
-  const { activeDeployment, draftDeployment } = service;
   return (
     <div className="flex justify-between">
-      <div>content</div>
-      <div className="border-l h-full w-[300px]">
+      <div>Content</div>
+      <div className="border-l h-full min-w-[300px] max-w-[300px]">
         <ServiceInfo service={service} />
       </div>
     </div>

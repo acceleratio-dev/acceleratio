@@ -94,8 +94,8 @@ export class DockerService {
         },
         Resources: {
           Limits: {
-            NanoCPUs: input.config.cpuLimit,
-            MemoryBytes: input.config.memoryLimit,
+            NanoCPUs: input.config.cpuLimit * 1000000000,
+            MemoryBytes: input.config.memoryLimit * 1024 * 1024,
           },
         },
       },

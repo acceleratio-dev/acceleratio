@@ -10,7 +10,11 @@ const config: CodegenConfig = {
     documents.map((docPath: string) => {
       const dirname = path.dirname(docPath);
       const filename = path.basename(docPath, '.graphql');
-      const outputPath = path.join(dirname, '_generated', `${filename}.generated.ts`);
+      const outputPath = path.join(
+        dirname,
+        '_generated',
+        `${filename}.generated.ts`,
+      );
 
       return [
         outputPath,
@@ -27,7 +31,7 @@ const config: CodegenConfig = {
           },
         },
       ];
-    })
+    }),
   ),
   ignoreNoDocuments: true,
 };

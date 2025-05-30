@@ -1,34 +1,40 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Settings, Skull, Webhook } from 'lucide-react';
+import { Globe, Settings, Skull, Webhook } from 'lucide-react';
 import { DangerZone } from './danger-zone';
 import { useMemo, useState } from 'react';
 import { GeneralInfo } from './general-info';
 import { ServiceWithDeployment } from '../service-deployments/_generated/getServiceDeploymentsQuery.generated';
+import { Domains } from './domains';
 
 export const ServiceSettings = ({
   service,
 }: {
   service: ServiceWithDeployment;
 }) => {
-  const tabs = useMemo(
-    () => [
-      {
-        label: 'General info',
-        icon: Settings,
-        component: <GeneralInfo service={service} />,
-      },
-      {
-        label: 'Danger zone',
-        icon: Skull,
-        component: <DangerZone serviceId={service._id} />,
-      },
-    ],
-    [service._id],
-  );
+  const tabs = [
+    {
+      label: 'General info',
+      key: 'general-info',
+      icon: Settings,
+      component: <GeneralInfo service={service} />,
+    },
+    {
+      label: 'Domains',
+      key: 'domains',
+      icon: Globe,
+      component: <Domains service={service} />,
+    },
+    {
+      label: 'Danger zone',
+      key: 'danger-zone',
+      icon: Skull,
+      component: <DangerZone serviceId={service._id} />,
+    },
+  ];
 
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [activeTab, setActiveTab] = useState(tabs[0].key);
 
   return (
     <div className="flex">
@@ -38,14 +44,16 @@ export const ServiceSettings = ({
             key={tab.label}
             className="w-full flex justify-start leading-none"
             variant={'outline'}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(tab.key)}
           >
             <tab.icon />
             {tab.label}
           </Button>
         ))}
       </div>
-      <div className="p-4">{activeTab.component}</div>
+      <div className="p-4">
+        {tabs.find((tab) => tab.key === activeTab)?.component}
+      </div>
     </div>
   );
 };

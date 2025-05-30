@@ -5,13 +5,19 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { Server } from './models/server.model';
 import { DockerEventService } from './dockerEvent.service';
 import { DeploymentModule } from 'src/deployment/deployment.module';
+import { DockerStatService } from './dockerStat.service';
 
 @Module({
   imports: [
     TypegooseModule.forFeature([Server]),
     forwardRef(() => DeploymentModule),
   ],
-  providers: [DockerResolver, DockerService, DockerEventService],
+  providers: [
+    DockerResolver,
+    DockerService,
+    DockerEventService,
+    DockerStatService,
+  ],
   exports: [DockerService],
 })
 export class DockerModule {}

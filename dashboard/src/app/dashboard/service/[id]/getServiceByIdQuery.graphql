@@ -11,6 +11,13 @@ query getServiceById($id: String!) {
       containerStatus
       config {
         image
+        cpuLimit
+        memoryLimit
+        domains {
+          domain
+          status
+          path
+        }
       }
       createdAt
       updatedAt
@@ -20,6 +27,13 @@ query getServiceById($id: String!) {
       containerStatus
       config {
         image
+        cpuLimit
+        memoryLimit
+        domains {
+          domain
+          status
+          path
+        }
       }
       createdAt
       updatedAt

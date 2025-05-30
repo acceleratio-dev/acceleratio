@@ -1,8 +1,8 @@
 'use client';
 import { ServiceWithDeployment } from '@/app/dashboard/service/[id]/_generated/getServiceByIdQuery.generated';
 import { ServiceDetailsTabs } from './service-details-tabs';
-import { ServiceStatusBadge } from '../service/service-status-badge';
 import { ServiceActions } from './service-actions/service-actions';
+import { ServiceTypeBadge } from '../service/service-type-badge';
 
 export const ServiceDetailsHeader = ({
   service,
@@ -51,12 +51,13 @@ export const ServiceDetailsHeader = ({
               ></path>
             </g>
           </svg>
-          <div className="flex items-center gap-2">
+          <div className="space-y-1.5">
             <div className="text-lg font-medium leading-none">
               {service.name}
             </div>
+            <ServiceTypeBadge serviceType={service.type} />
           </div>
-          <div className='ml-auto'>
+          <div className="ml-auto">
             <ServiceActions service={service} />
           </div>
         </div>

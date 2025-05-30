@@ -49,38 +49,67 @@ export class DeploymentService {
   }
 
   async startService(serviceId: string) {
-    const latestDeployment = await this.getLatestDeployment(serviceId);
+    const [activeDeployment, draftDeployment] =
+      await this.getActiveAndDraftDeployments(serviceId);
 
-    if (!latestDeployment) {
-      throw new Error('Service not found');
+    if (draftDeployment) {
+      if (activeDeployment) {
+        try {
+          await this.dockerService.deleteService(activeDeployment.containerId);
+        } catch (error) {
+          console.error(error);
+        }
+
+        await this.deploymentModel.updateOne(
+          { _id: activeDeployment._id },
+          { $set: { containerId: null, status: DeploymentStatus.FINISHED } },
+        );
+      }
+
+      const containerId = await this.dockerService.createService({
+        serviceId,
+        deploymentId: draftDeployment._id,
+        config: draftDeployment.config,
+      });
+
+      await this.deploymentModel.updateOne(
+        { _id: draftDeployment._id },
+        {
+          $set: {
+            status: DeploymentStatus.ACTIVE,
+            containerId,
+            containerStatus: ContainerStatus.PENDING,
+          },
+        },
+      );
+
+      return true;
     }
 
-    if (
-      latestDeployment.status === DeploymentStatus.ACTIVE &&
-      latestDeployment.containerStatus !== ContainerStatus.STOPPED &&
-      latestDeployment.containerId !== null
-    ) {
+    if (activeDeployment.containerId !== null) {
       throw new Error('Service already deployed');
     }
+    if (activeDeployment.containerStatus === ContainerStatus.STOPPED) {
+      const containerId = await this.dockerService.createService({
+        serviceId,
+        deploymentId: activeDeployment._id,
+        config: activeDeployment.config,
+      });
 
-    const containerId = await this.dockerService.createService({
-      serviceId,
-      deploymentId: latestDeployment._id,
-      config: latestDeployment.config,
-    });
-
-    await this.deploymentModel.updateOne(
-      { _id: latestDeployment._id },
-      {
-        $set: {
-          status: DeploymentStatus.ACTIVE,
-          containerStatus: ContainerStatus.PENDING,
-          containerId,
+      await this.deploymentModel.updateOne(
+        { _id: activeDeployment._id },
+        {
+          $set: {
+            containerId,
+            containerStatus: ContainerStatus.PENDING,
+          },
         },
-      },
-    );
+      );
 
-    return true;
+      return true;
+    }
+
+    throw new Error('No changes to deploy');
   }
 
   async stopService(serviceId: string) {
@@ -105,6 +134,7 @@ export class DeploymentService {
       {
         $set: {
           containerId: null,
+          containerStatus: ContainerStatus.STOPPED,
         },
       },
     );
@@ -116,18 +146,21 @@ export class DeploymentService {
     const latestDeployment = await this.getLatestDeployment(serviceId);
 
     if (latestDeployment.status === DeploymentStatus.ACTIVE) {
-      await this.createDeployment({
-        serviceId: latestDeployment.serviceId,
+      await this.deploymentModel.create({
+        serviceId,
+        status: DeploymentStatus.DRAFT,
         config: {
           ...latestDeployment.config,
           ...config,
         },
       });
-    } else {
+    } else if (latestDeployment.status === DeploymentStatus.DRAFT) {
       await this.deploymentModel.updateOne(
         { _id: latestDeployment._id },
         { $set: { config } },
       );
+    } else {
+      throw new Error('Deployments not found');
     }
 
     return true;

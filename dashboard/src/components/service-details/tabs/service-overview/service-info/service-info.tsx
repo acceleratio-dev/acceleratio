@@ -29,8 +29,8 @@ export const ServiceInfo = ({
     {
       label: 'Resources limits',
       info: {
-        cpu: activeDeployment?.config?.cpuLimit || 'Unlimited',
-        ram: activeDeployment?.config?.memoryLimit || 'Unlimited',
+        cpu: (activeDeployment?.config?.cpuLimit || 'Unlimited') + ' vCPUs',
+        ram: (activeDeployment?.config?.memoryLimit || 'Unlimited') + ' MB',
       },
     },
   ];
