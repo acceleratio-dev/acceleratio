@@ -66,10 +66,6 @@ export class DeploymentDomainService {
   async generateLabels(input: DomainInput[]) {
     const labels = {
       'traefik.enable': 'true',
-      'traefik.http.routers.server.entrypoints': 'web',
-      'traefik.http.routers.server.middlewares': 'redirect-to-https',
-      'traefik.http.routers.server-secure.entrypoints': 'websecure',
-      'traefik.http.routers.server-secure.tls.certresolver': 'letsencrypt',
       'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme':
         'https',
       'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent':
@@ -77,18 +73,33 @@ export class DeploymentDomainService {
       'traefik.docker.network': 'traefik-public',
     };
 
-    for (const domain of input) {
-      labels[`traefik.http.routers.server.rule`] = `Host("${domain.domain}")`;
-      labels[
-        `traefik.http.routers.server-secure.rule`
-      ] = `Host("${domain.domain}")`;
-      labels[`traefik.http.services.server.loadbalancer.server.port`] =
-        domain.port.toString();
+    // Handle multiple domains by creating unique router names
+    for (let i = 0; i < input.length; i++) {
+      const domain = input[i];
+      const routerName = input.length === 1 ? 'server' : `server-${i}`;
+
+      // Build the rule with domain and optional path
+      let rule = `Host(\`${domain.domain}\`)`;
       if (domain.path) {
-        labels[
-          'traefik.http.routers.server.rule'
-        ] = `Host("${domain.domain}") && PathPrefix("${domain.path}")`;
+        rule += ` && PathPrefix(\`${domain.path}\`)`;
       }
+
+      // HTTP router (redirects to HTTPS)
+      labels[`traefik.http.routers.${routerName}.entrypoints`] = 'web';
+      labels[`traefik.http.routers.${routerName}.middlewares`] =
+        'redirect-to-https';
+      labels[`traefik.http.routers.${routerName}.rule`] = rule;
+
+      // HTTPS router (main router)
+      labels[`traefik.http.routers.${routerName}-secure.entrypoints`] =
+        'websecure';
+      labels[`traefik.http.routers.${routerName}-secure.tls.certresolver`] =
+        'letsencrypt';
+      labels[`traefik.http.routers.${routerName}-secure.rule`] = rule;
+
+      // Service configuration (port)
+      labels[`traefik.http.services.${routerName}.loadbalancer.server.port`] =
+        domain.port.toString();
     }
 
     return labels;
