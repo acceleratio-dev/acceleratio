@@ -30,6 +30,7 @@ export class DockerService {
   }
   private getPrimaryIP() {
     const interfaces = networkInterfaces();
+    console.log(interfaces.eth0);
     return interfaces?.eth0?.[0]?.address || '127.0.0.1';
   }
 
@@ -52,13 +53,11 @@ export class DockerService {
 
       const ip = this.getPrimaryIP();
       const port = 2377;
-      console.log(ip, port);
-      console.log(net.address);
 
       const nodeId = await this.sdk.swarmInit({
         ForceNewCluster: false,
         ListenAddr: `0.0.0.0:${port}`,
-        AdvertiseAddr: `${ip}:${port}`,
+        AdvertiseAddr: `eth0:${port}`,
       });
 
       const node = await this.sdk.getNode(nodeId).inspect();
