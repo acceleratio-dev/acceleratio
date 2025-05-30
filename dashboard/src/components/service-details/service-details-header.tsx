@@ -11,8 +11,6 @@ export const ServiceDetailsHeader = ({
   service: ServiceWithDeployment;
   activeTab: string;
 }) => {
-  const { activeDeployment, draftDeployment } = service;
-  const deployment = activeDeployment || draftDeployment;
   return (
     <div>
       <div className="border rounded-md">

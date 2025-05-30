@@ -12,7 +12,7 @@ export const ServiceTypeBadge = ({
 }) => {
   return (
     <div className="inline-flex items-center gap-2 border bg-slate-50 text-xs font-medium rounded-md px-2 py-0.5">
-      {serviceTypeToIcon[serviceType]}{' '}
+      {serviceTypeToIcon?.[serviceType] || ''}
       <span className="capitalize">{serviceType.toLowerCase()}</span>
     </div>
   );

@@ -259,7 +259,7 @@ export type GetServiceByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetServiceByIdQuery = { __typename?: 'Query', service: { __typename?: 'ServiceWithDeployment', _id: string, name: string, projectId: string, type: ServiceType, createdAt: any, updatedAt: any, activeDeployment: { __typename?: 'Deployment', status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string, cpuLimit: number | null, memoryLimit: number | null, domains: Array<{ __typename?: 'Domain', domain: string, status: DomainStatus, path: string, port: number }> | null } } | null, draftDeployment: { __typename?: 'Deployment', status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string, cpuLimit: number | null, memoryLimit: number | null, domains: Array<{ __typename?: 'Domain', domain: string, status: DomainStatus, path: string, port: number }> | null } } | null } };
+export type GetServiceByIdQuery = { __typename?: 'Query', service: { __typename?: 'ServiceWithDeployment', _id: string, name: string, projectId: string, type: ServiceType, createdAt: any, updatedAt: any, activeDeployment: { __typename?: 'Deployment', _id: string, containerId: string | null, serviceId: string, status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string, cpuLimit: number | null, memoryLimit: number | null, domains: Array<{ __typename?: 'Domain', domain: string, status: DomainStatus, path: string, port: number }> | null } } | null, draftDeployment: { __typename?: 'Deployment', _id: string, containerId: string | null, serviceId: string, status: DeploymentStatus, containerStatus: ContainerStatus | null, createdAt: any, updatedAt: any, config: { __typename?: 'DeploymentConfig', image: string, cpuLimit: number | null, memoryLimit: number | null, domains: Array<{ __typename?: 'Domain', domain: string, status: DomainStatus, path: string, port: number }> | null } } | null } };
 
 
 export const GetServiceByIdDocument = gql`
@@ -272,6 +272,9 @@ export const GetServiceByIdDocument = gql`
     createdAt
     updatedAt
     activeDeployment {
+      _id
+      containerId
+      serviceId
       status
       containerStatus
       config {
@@ -289,6 +292,9 @@ export const GetServiceByIdDocument = gql`
       updatedAt
     }
     draftDeployment {
+      _id
+      containerId
+      serviceId
       status
       containerStatus
       config {

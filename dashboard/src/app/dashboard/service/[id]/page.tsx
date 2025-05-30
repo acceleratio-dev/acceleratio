@@ -15,13 +15,14 @@ export default function ServicePage({
   params: Promise<{ id: string }>;
 }) {
   const unwrappedParams = use(params);
-  const { data, loading } = useGetServiceByIdQuery({
+  const { data, loading, error } = useGetServiceByIdQuery({
     variables: { id: unwrappedParams.id },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
+  if (error) return <div>Error: {error.message}</div>;
   if (loading) return <LoadingState />;
   if (!data?.service) return <div>Service not found</div>;
 
@@ -33,7 +34,7 @@ export default function ServicePage({
         backLink={`/dashboard/projects/${service?.projectId}`}
       />
       <div className="wrapper">
-        <ServiceDetailsContent service={service as ServiceWithDeployment} />
+        <ServiceDetailsContent service={service} />
       </div>
     </>
   );

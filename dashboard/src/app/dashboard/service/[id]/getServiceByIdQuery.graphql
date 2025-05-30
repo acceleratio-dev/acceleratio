@@ -7,6 +7,9 @@ query getServiceById($id: String!) {
     createdAt
     updatedAt
     activeDeployment {
+      _id
+      containerId
+      serviceId
       status
       containerStatus
       config {
@@ -24,6 +27,9 @@ query getServiceById($id: String!) {
       updatedAt
     }
     draftDeployment {
+      _id
+      containerId
+      serviceId
       status
       containerStatus
       config {
