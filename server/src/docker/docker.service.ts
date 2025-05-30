@@ -3,7 +3,7 @@ import * as Docker from 'dockerode';
 import { Server } from './models/server.model';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
-import { networkInterfaces } from 'os';
+import * as os from 'os';
 import { CreateDockerServiceInput } from './dto/createDockerService.input';
 
 // TODO: move servers to separate module and use this service only for dockerode operations
@@ -29,9 +29,18 @@ export class DockerService {
     }
   }
   private getPrimaryIP() {
-    const interfaces = networkInterfaces();
-    console.log(interfaces);
-    return interfaces?.eth0?.[0]?.address || '127.0.0.1';
+    const networkInterfaces = os.networkInterfaces();
+
+    for (const interfaceName in networkInterfaces) {
+      const interfaces = networkInterfaces[interfaceName];
+      for (const intf of interfaces) {
+        if (!intf.internal && intf.family === 'IPv4') {
+          return intf.address;
+        }
+      }
+    }
+
+    return '127.0.0.1';
   }
 
   async initSwarm(): Promise<string | null> {
@@ -40,15 +49,6 @@ export class DockerService {
 
       if (isSwarmExists) {
         throw new Error('Swarm already exists');
-      }
-
-      const nets = networkInterfaces();
-      const net = Object.values(nets)
-        .flat()
-        .find((net) => net?.family === 'IPv4' && !net.internal);
-
-      if (!net) {
-        throw new Error('No suitable network interface found');
       }
 
       const ip = this.getPrimaryIP();
