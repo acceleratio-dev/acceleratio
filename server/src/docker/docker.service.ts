@@ -52,6 +52,8 @@ export class DockerService {
 
       const ip = this.getPrimaryIP();
       const port = 2377;
+      console.log(ip, port);
+      console.log(net.address);
 
       const nodeId = await this.sdk.swarmInit({
         ForceNewCluster: false,
