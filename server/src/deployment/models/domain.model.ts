@@ -32,22 +32,22 @@ export class Domain {
   path?: string;
 
   @Field(() => Number)
-  @prop({ required: false })
-  port?: number;
+  @prop({ required: true })
+  port: number;
 
   @Field(() => DomainStatus)
-  @prop({ required: true, enum: DomainStatus, default: DomainStatus.VERIFYING })
-  status!: DomainStatus;
+  @prop({ enum: DomainStatus, default: DomainStatus.VERIFYING })
+  status: DomainStatus;
 }
 
 @InputType()
 export class DomainInput {
   @Field(() => String)
-  domain!: string;
+  domain: string;
 
   @Field(() => String, { nullable: true })
   path?: string;
 
-  @Field(() => Number, { nullable: true })
-  port?: number;
+  @Field(() => Number)
+  port: number;
 }

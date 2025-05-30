@@ -27,7 +27,7 @@ export const Domains = ({ service }: { service: ServiceWithDeployment }) => {
                 {domain.path && `/${domain.path}`}
                 {domain.port && `:${domain.port}`}
               </div>
-              <div>{domain.status.toLowerCase()}</div>
+              <div>{domain.status?.toLowerCase() || ''}</div>
             </div>
           ))}
         </div>

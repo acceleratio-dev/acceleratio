@@ -82,7 +82,7 @@ type Domain {
 input DomainInput {
   domain: String!
   path: String
-  port: Int
+  port: Int!
 }
 
 """The status of a domain"""

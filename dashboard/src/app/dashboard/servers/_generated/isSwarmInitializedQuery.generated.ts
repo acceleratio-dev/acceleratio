@@ -91,13 +91,13 @@ export type Domain = {
   domain: Scalars['String']['output'];
   path: Scalars['String']['output'];
   port: Scalars['Int']['output'];
-  status: DomainStatus;
+  status: Maybe<DomainStatus>;
 };
 
 export type DomainInput = {
   domain: Scalars['String']['input'];
   path: InputMaybe<Scalars['String']['input']>;
-  port: InputMaybe<Scalars['Int']['input']>;
+  port: Scalars['Int']['input'];
 };
 
 /** The status of a domain */

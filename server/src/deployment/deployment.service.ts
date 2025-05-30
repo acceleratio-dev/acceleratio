@@ -153,12 +153,21 @@ export class DeploymentService {
         config: {
           ...latestDeployment.config,
           ...config,
+          domains: latestDeployment.config.domains || [],
         },
       });
     } else if (latestDeployment.status === DeploymentStatus.DRAFT) {
       await this.deploymentModel.updateOne(
         { _id: latestDeployment._id },
-        { $set: { config } },
+        {
+          $set: {
+            config: {
+              ...latestDeployment.config,
+              ...config,
+              domains: latestDeployment.config.domains || [],
+            },
+          },
+        },
       );
     } else {
       throw new Error('Deployments not found');

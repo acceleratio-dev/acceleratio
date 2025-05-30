@@ -31,7 +31,12 @@ export class DeploymentDomainService {
       await this.deploymentModel.updateOne(
         { _id: latestDeployment._id },
         {
-          $push: { 'config.domains': input.domain },
+          $push: {
+            'config.domains': {
+              ...input.domain,
+              status: DomainStatus.VERIFYING,
+            },
+          },
         },
       );
 
@@ -50,7 +55,6 @@ export class DeploymentDomainService {
             domain: input.domain.domain,
             path: input.domain.path,
             port: input.domain.port,
-            status: DomainStatus.VERIFYING,
           },
         ],
       },
@@ -79,7 +83,7 @@ export class DeploymentDomainService {
         `traefik.http.routers.server-secure.rule`
       ] = `Host("${domain.domain}")`;
       labels[`traefik.http.services.server.loadbalancer.server.port`] =
-        domain.port;
+        domain.port.toString();
       if (domain.path) {
         labels[
           'traefik.http.routers.server.rule'
