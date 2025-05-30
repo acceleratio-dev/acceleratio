@@ -3,6 +3,7 @@ version: '3.8'
 services:
   traefik:
     image: traefik:v3.0
+    container_name: traefik
     ports:
       - '80:80'
       - '443:443'
@@ -72,6 +73,7 @@ services:
 
   mongo:
     image: mongo:7
+    container_name: mongo
     volumes:
       - mongo_data:/data/db
     ports:
@@ -96,6 +98,6 @@ volumes:
 
 networks:
   traefik-public:
-    driver: bridge
+    driver: overlay
   app-network:
     driver: bridge
