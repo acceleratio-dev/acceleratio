@@ -9,9 +9,11 @@ services:
       - '443:443'
     command:
       - --providers.docker=true
-      - --providers.docker.swarmMode=true
+      - --providers.docker.swarm=true
+      - --providers.swarm.exposedByDefault=false
+      - --providers.swarm.network=traefik-public
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=acceleratio_traefik-public
+      - --providers.docker.network=traefik-public
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
