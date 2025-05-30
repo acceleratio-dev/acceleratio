@@ -3,7 +3,7 @@ import * as Docker from 'dockerode';
 import { Server } from './models/server.model';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
-import * as os from 'os';
+import { networkInterfaces } from 'os';
 import { CreateDockerServiceInput } from './dto/createDockerService.input';
 
 // TODO: move servers to separate module and use this service only for dockerode operations
@@ -15,9 +15,7 @@ export class DockerService {
     @InjectModel(Server)
     private readonly serverModel: ReturnModelType<typeof Server>,
   ) {
-    this.sdk = new Docker({
-      socketPath: '/var/run/docker.sock',
-    });
+    this.sdk = new Docker();
   }
 
   async isSwarmInitialized() {
@@ -29,19 +27,8 @@ export class DockerService {
     }
   }
   private getPrimaryIP() {
-    const networkInterfaces = os.networkInterfaces();
-    console.log(networkInterfaces);
-
-    for (const interfaceName in networkInterfaces) {
-      const interfaces = networkInterfaces[interfaceName];
-      for (const intf of interfaces) {
-        if (!intf.internal && intf.family === 'IPv4') {
-          return intf.address;
-        }
-      }
-    }
-
-    return '127.0.0.1';
+    const interfaces = networkInterfaces();
+    return interfaces?.eth0?.[0]?.address || '127.0.0.1';
   }
 
   async initSwarm(): Promise<string | null> {
@@ -52,13 +39,22 @@ export class DockerService {
         throw new Error('Swarm already exists');
       }
 
+      const nets = networkInterfaces();
+      const net = Object.values(nets)
+        .flat()
+        .find((net) => net?.family === 'IPv4' && !net.internal);
+
+      if (!net) {
+        throw new Error('No suitable network interface found');
+      }
+
       const ip = this.getPrimaryIP();
       const port = 2377;
 
       const nodeId = await this.sdk.swarmInit({
         ForceNewCluster: false,
         ListenAddr: `0.0.0.0:${port}`,
-        AdvertiseAddr: `${ip}:${port}`,
+        AdvertiseAddr: `${process.env.IP || ip}:${port}`,
       });
 
       const node = await this.sdk.getNode(nodeId).inspect();
@@ -79,6 +75,25 @@ export class DockerService {
       console.error(error);
       return null;
     }
+  }
+
+  async inspectService(containerId: string) {
+    const service = await this.sdk.getService(containerId);
+    const inspect = await service.inspect();
+    const tasks = await this.sdk.listTasks({
+      filters: {
+        service: [inspect.Spec.Name],
+      },
+    });
+
+    for (const task of tasks) {
+      const container = await this.sdk.getContainer(
+        task.Status.ContainerStatus.ContainerID,
+      );
+      const inspect = await container.stats();
+      console.log(inspect);
+    }
+    return service.inspect();
   }
 
   async getNodes() {
