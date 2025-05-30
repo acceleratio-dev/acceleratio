@@ -10,7 +10,7 @@ services:
     command:
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=traefik-public
+      - --providers.docker.network=acceleratio_traefik-public
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
@@ -39,7 +39,6 @@ services:
       - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DATABASE}?authSource=admin&directConnection=true
     networks:
       - app-network
-      - traefik-public
     restart: unless-stopped
     depends_on:
       mongo:
@@ -70,7 +69,7 @@ services:
       - traefik.http.services.dashboard.loadbalancer.server.port=3000
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
-      - traefik.docker.network=traefik-public
+      - traefik.docker.network=acceleratio_traefik-public
     depends_on:
       - server
 
@@ -87,7 +86,6 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     networks:
       - app-network
-      - traefik-public
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
