@@ -11,6 +11,9 @@ export async function getGraphqlConfig(): Promise<ApolloDriverConfig> {
     buildSchemaOptions: {
       numberScalarMode: 'integer',
     },
+    subscriptions: {
+      'graphql-ws': true,
+    },
     context: ({ req, res }) => ({ req, res }),
     formatError: (error: GraphQLError) => {
       const originalError = error?.extensions?.originalError as any;

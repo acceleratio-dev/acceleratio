@@ -1,0 +1,28 @@
+query getServiceById($id: String!) {
+  service: getServiceById(id: $id) {
+    _id
+    name
+    projectId
+    type
+    createdAt
+    updatedAt
+    activeDeployment {
+      status
+      containerStatus
+      config {
+        image
+      }
+      createdAt
+      updatedAt
+    }
+    draftDeployment {
+      status
+      containerStatus
+      config {
+        image
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}

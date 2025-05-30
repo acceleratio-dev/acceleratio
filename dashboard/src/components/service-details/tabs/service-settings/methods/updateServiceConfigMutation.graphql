@@ -1,0 +1,6 @@
+mutation UpdateServiceConfig(
+  $serviceId: String!
+  $config: DeploymentConfigUpdateInput!
+) {
+  updateServiceConfig(serviceId: $serviceId, config: $config)
+}

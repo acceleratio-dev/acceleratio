@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useMutation } from '@apollo/client';
-import { InitSwarmDocument } from './_generated/initSwarmQuery.generated';
+import { InitSwarmDocument } from './_generated/initSwarmMutation.generated';
 import { toast } from 'sonner';
 
 export const InitSwarmContainer = () => {

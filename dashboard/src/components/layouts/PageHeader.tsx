@@ -1,12 +1,28 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '../ui/button';
-import { Bell, Search } from 'lucide-react';
+import { ArrowLeft, Bell, Search } from 'lucide-react';
 import { Input } from '../ui/input';
+import Link from 'next/link';
 
-export const PageHeader = ({ title }: { title: string }) => {
+export const PageHeader = ({
+  title,
+  backLink,
+}: {
+  title: string;
+  backLink?: string;
+}) => {
   return (
     <header className="h-12 bg-white border-b flex justify-between items-center px-8">
-      <div className="font-medium">{title}</div>
+      <div className="flex items-center gap-2">
+        {backLink && (
+          <Link href={backLink}>
+            <Button variant="ghost" className='h-8 w-8' size="icon">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </Link>
+        )}
+        <div className="font-medium leading-none">{title}</div>
+      </div>
       <div className="relative w-[300px]">
         <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
         <Input

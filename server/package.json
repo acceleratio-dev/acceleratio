@@ -33,6 +33,7 @@
     "class-validator": "^0.14.2",
     "dockerode": "^4.0.6",
     "graphql": "^16.11.0",
+    "graphql-subscriptions": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0",
     "nestjs-typegoose": "^7.1.38",

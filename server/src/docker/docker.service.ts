@@ -4,7 +4,9 @@ import { Server } from './models/server.model';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { networkInterfaces } from 'os';
+import { CreateDockerServiceInput } from './dto/createDockerService.input';
 
+// TODO: move servers to separate module and use this service only for dockerode operations
 @Injectable()
 export class DockerService {
   private readonly sdk: Docker;
@@ -78,5 +80,32 @@ export class DockerService {
   async getNodes() {
     const nodes = await this.serverModel.find();
     return nodes;
+  }
+
+  async createService(input: CreateDockerServiceInput) {
+    const service = await this.sdk.createService({
+      TaskTemplate: {
+        ContainerSpec: {
+          Image: input.config.image,
+          Labels: {
+            'com.acceleratio.deploymentId': input.deploymentId,
+            'com.acceleratio.serviceId': input.serviceId,
+          },
+        },
+        Resources: {
+          Limits: {
+            NanoCPUs: input.config.cpuLimit,
+            MemoryBytes: input.config.memoryLimit,
+          },
+        },
+      },
+    });
+    return service.id;
+  }
+
+  async deleteService(containerId: string) {
+    const service = await this.sdk.getService(containerId);
+    await service.remove();
+    return true;
   }
 }

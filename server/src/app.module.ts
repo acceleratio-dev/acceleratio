@@ -5,9 +5,10 @@ import { getGraphqlConfig } from './config/graphql.config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { DockerModule } from './docker/docker.module';
 import { ProjectModule } from './project/project.module';
+import { ServiceModule } from './service/service.module';
+import { DeploymentModule } from './deployment/deployment.module';
 
 @Module({
   imports: [
@@ -20,6 +21,8 @@ import { ProjectModule } from './project/project.module';
     UserModule,
     DockerModule,
     ProjectModule,
+    ServiceModule,
+    DeploymentModule,
   ],
 })
 export class AppModule {}

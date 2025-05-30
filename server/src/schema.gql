@@ -6,15 +6,65 @@ type AuthResponse {
   accessToken: String!
 }
 
+"""The status of a container"""
+enum ContainerStatus {
+  PENDING
+  RUNNING
+  STOPPED
+}
+
 input CreateProjectInput {
   description: String!
   name: String!
+}
+
+input CreateServiceInput {
+  config: DeploymentConfigInput!
+  name: String!
+  projectId: String!
+  type: ServiceType!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type Deployment {
+  _id: ID!
+  config: DeploymentConfig!
+  containerId: String
+  containerStatus: ContainerStatus
+  createdAt: DateTime!
+  serviceId: String!
+  status: DeploymentStatus!
+  updatedAt: DateTime!
+}
+
+type DeploymentConfig {
+  cpuLimit: Int
+  image: String!
+  memoryLimit: Int
+}
+
+input DeploymentConfigInput {
+  cpuLimit: Int
+  image: String!
+  memoryLimit: Int
+}
+
+input DeploymentConfigUpdateInput {
+  cpuLimit: Int
+  image: String
+  memoryLimit: Int
+}
+
+"""The status of a deployment"""
+enum DeploymentStatus {
+  ACTIVE
+  DRAFT
+  FINISHED
+}
 
 input LoginInput {
   email: String!
@@ -23,8 +73,14 @@ input LoginInput {
 
 type Mutation {
   createProject(createProjectInput: CreateProjectInput!): Project!
+  createService(input: CreateServiceInput!): Boolean!
+  deleteProject(id: String!): Boolean!
   initSwarm: Boolean!
   login(loginInput: LoginInput!): AuthResponse!
+  startService(serviceId: String!): Boolean!
+  stopService(serviceId: String!): Boolean!
+  updateProject(id: String!, updateProjectInput: UpdateProjectInput!): Project!
+  updateServiceConfig(config: DeploymentConfigUpdateInput!, serviceId: String!): Boolean!
 }
 
 type Project {
@@ -38,7 +94,10 @@ type Project {
 type Query {
   getNodes: [Server!]!
   getProjectById(id: String!): Project!
+  getProjectServices(projectId: String!): [ServiceWithDeployment!]!
   getProjects: [Project!]!
+  getServiceById(id: String!): ServiceWithDeployment!
+  getServiceDeployments(serviceId: String!): [Deployment!]!
   getUsers: [User!]!
   isSwarmInitialized: Boolean!
 }
@@ -51,6 +110,27 @@ type Server {
   nodeId: String!
   status: String!
   updatedAt: DateTime!
+}
+
+"""The type of a service"""
+enum ServiceType {
+  DOCKER
+}
+
+type ServiceWithDeployment {
+  _id: ID!
+  activeDeployment: Deployment
+  createdAt: DateTime!
+  draftDeployment: Deployment
+  name: String!
+  projectId: String!
+  type: ServiceType!
+  updatedAt: DateTime!
+}
+
+input UpdateProjectInput {
+  description: String!
+  name: String!
 }
 
 type User {

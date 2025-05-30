@@ -3,6 +3,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { Project } from './models/project.model';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { CreateProjectInput } from './dto/createProject.input';
+import { UpdateProjectInput } from './dto/updateProject.input';
 
 @Injectable()
 export class ProjectService {
@@ -22,6 +23,22 @@ export class ProjectService {
 
   async createProject(createProjectInput: CreateProjectInput) {
     const project = await this.projectModel.create(createProjectInput);
+    return project;
+  }
+
+  async deleteProject(id: string) {
+    await this.projectModel.findByIdAndDelete(id);
+    return true;
+  }
+
+  async updateProject(id: string, updateProjectInput: UpdateProjectInput) {
+    const project = await this.projectModel.findByIdAndUpdate(
+      id,
+      updateProjectInput,
+      {
+        new: true,
+      },
+    );
     return project;
   }
 }

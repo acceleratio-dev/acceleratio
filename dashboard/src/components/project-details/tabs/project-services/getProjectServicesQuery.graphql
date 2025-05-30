@@ -1,0 +1,22 @@
+query GetProjectServices($projectId: String!) {
+  services: getProjectServices(projectId: $projectId) {
+    _id
+    name
+    type
+    projectId
+    createdAt
+    updatedAt
+    activeDeployment {
+      status
+      containerStatus
+      createdAt
+      updatedAt
+    }
+    draftDeployment {
+      status
+      containerStatus
+      createdAt
+      updatedAt
+    }
+  }
+}

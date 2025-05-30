@@ -23,10 +23,62 @@ export type AuthResponse = {
   accessToken: Scalars['String']['output'];
 };
 
+/** The status of a container */
+export enum ContainerStatus {
+  Pending = 'PENDING',
+  Running = 'RUNNING',
+  Stopped = 'STOPPED'
+}
+
 export type CreateProjectInput = {
   description: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
+
+export type CreateServiceInput = {
+  config: DeploymentConfigInput;
+  name: Scalars['String']['input'];
+  projectId: Scalars['String']['input'];
+  type: ServiceType;
+};
+
+export type Deployment = {
+  __typename?: 'Deployment';
+  _id: Scalars['ID']['output'];
+  config: DeploymentConfig;
+  containerId: Maybe<Scalars['String']['output']>;
+  containerStatus: Maybe<ContainerStatus>;
+  createdAt: Scalars['DateTime']['output'];
+  serviceId: Scalars['String']['output'];
+  status: DeploymentStatus;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type DeploymentConfig = {
+  __typename?: 'DeploymentConfig';
+  cpuLimit: Maybe<Scalars['Int']['output']>;
+  image: Scalars['String']['output'];
+  memoryLimit: Maybe<Scalars['Int']['output']>;
+};
+
+export type DeploymentConfigInput = {
+  cpuLimit: InputMaybe<Scalars['Int']['input']>;
+  image: Scalars['String']['input'];
+  memoryLimit: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type DeploymentConfigUpdateInput = {
+  cpuLimit: InputMaybe<Scalars['Int']['input']>;
+  image: InputMaybe<Scalars['String']['input']>;
+  memoryLimit: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** The status of a deployment */
+export enum DeploymentStatus {
+  Active = 'ACTIVE',
+  Draft = 'DRAFT',
+  Finished = 'FINISHED'
+}
 
 export type LoginInput = {
   email: Scalars['String']['input'];
@@ -36,8 +88,14 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createProject: Project;
+  createService: Scalars['Boolean']['output'];
+  deleteProject: Scalars['Boolean']['output'];
   initSwarm: Scalars['Boolean']['output'];
   login: AuthResponse;
+  startService: Scalars['Boolean']['output'];
+  stopService: Scalars['Boolean']['output'];
+  updateProject: Project;
+  updateServiceConfig: Scalars['Boolean']['output'];
 };
 
 
@@ -46,8 +104,40 @@ export type MutationCreateProjectArgs = {
 };
 
 
+export type MutationCreateServiceArgs = {
+  input: CreateServiceInput;
+};
+
+
+export type MutationDeleteProjectArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationLoginArgs = {
   loginInput: LoginInput;
+};
+
+
+export type MutationStartServiceArgs = {
+  serviceId: Scalars['String']['input'];
+};
+
+
+export type MutationStopServiceArgs = {
+  serviceId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateProjectArgs = {
+  id: Scalars['String']['input'];
+  updateProjectInput: UpdateProjectInput;
+};
+
+
+export type MutationUpdateServiceConfigArgs = {
+  config: DeploymentConfigUpdateInput;
+  serviceId: Scalars['String']['input'];
 };
 
 export type Project = {
@@ -63,7 +153,10 @@ export type Query = {
   __typename?: 'Query';
   getNodes: Array<Server>;
   getProjectById: Project;
+  getProjectServices: Array<ServiceWithDeployment>;
   getProjects: Array<Project>;
+  getServiceById: ServiceWithDeployment;
+  getServiceDeployments: Array<Deployment>;
   getUsers: Array<User>;
   isSwarmInitialized: Scalars['Boolean']['output'];
 };
@@ -71,6 +164,21 @@ export type Query = {
 
 export type QueryGetProjectByIdArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryGetProjectServicesArgs = {
+  projectId: Scalars['String']['input'];
+};
+
+
+export type QueryGetServiceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetServiceDeploymentsArgs = {
+  serviceId: Scalars['String']['input'];
 };
 
 export type Server = {
@@ -82,6 +190,28 @@ export type Server = {
   nodeId: Scalars['String']['output'];
   status: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+/** The type of a service */
+export enum ServiceType {
+  Docker = 'DOCKER'
+}
+
+export type ServiceWithDeployment = {
+  __typename?: 'ServiceWithDeployment';
+  _id: Scalars['ID']['output'];
+  activeDeployment: Maybe<Deployment>;
+  createdAt: Scalars['DateTime']['output'];
+  draftDeployment: Maybe<Deployment>;
+  name: Scalars['String']['output'];
+  projectId: Scalars['String']['output'];
+  type: ServiceType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type UpdateProjectInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type User = {
