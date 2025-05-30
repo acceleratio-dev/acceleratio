@@ -9,9 +9,6 @@ services:
       - '443:443'
     command:
       - --providers.docker=true
-      - --providers.docker.swarm=true
-      - --providers.swarm.exposedByDefault=false
-      - --providers.swarm.network=traefik-public
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=traefik-public
       - --entrypoints.web.address=:80
