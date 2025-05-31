@@ -62,7 +62,7 @@ services:
       - traefik.enable=true
       - traefik.swarm=true
       - traefik.swarm.exposedByDefault=false
-      - traefik.swarm.network=traefik-public
+      - traefik.swarm.network=acceleratio_traefik-public
       - traefik.swarm.endpoint=tcp://127.0.0.1:2377
       - traefik.http.routers.dashboard.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.dashboard.entrypoints=web
