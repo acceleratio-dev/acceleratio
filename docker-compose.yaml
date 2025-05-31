@@ -57,6 +57,7 @@ services:
     networks:
       - app-network
       - traefik-public
+      - swarm-traefik-public
     restart: unless-stopped
     labels:
       - traefik.enable=true
