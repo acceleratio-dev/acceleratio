@@ -60,7 +60,10 @@ services:
     restart: unless-stopped
     labels:
       - traefik.enable=true
-      - traefik.providers.swarm.endpoint=tcp://127.0.0.1:2377
+      - traefik.swarm=true
+      - traefik.swarm.exposedByDefault=false
+      - traefik.swarm.network=acceleratio_traefik-public
+      - traefik.swarm.endpoint=tcp://127.0.0.1:2377
       - traefik.http.routers.dashboard.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.dashboard.entrypoints=web
       - traefik.http.routers.dashboard.middlewares=redirect-to-https
