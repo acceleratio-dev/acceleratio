@@ -127,7 +127,7 @@ export class DockerService {
         },
         Networks: [
           {
-            Target: 'swarm-traefik-public',
+            Target: 'acceleratio_traefik-public',
           },
         ],
       },
