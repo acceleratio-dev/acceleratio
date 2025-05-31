@@ -70,7 +70,7 @@ export class DeploymentDomainService {
         'https',
       'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent':
         'true',
-      'traefik.docker.network': 'acceleratio_traefik-public',
+      'traefik.docker.network': 'traefik-public',
     };
 
     // Handle multiple domains by creating unique router names
