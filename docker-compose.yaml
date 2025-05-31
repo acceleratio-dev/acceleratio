@@ -59,7 +59,6 @@ services:
     networks:
       - app-network
       - traefik-public
-      - swarm-traefik-public
     deploy:
       mode: replicated
       replicas: 1
@@ -76,8 +75,7 @@ services:
       - traefik.http.services.dashboard.loadbalancer.server.port=3000
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
-      - traefik.docker.network=acceleratio_traefik-public
-      - traefik.swarm.network=swarm-traefik-public
+      - traefik.docker.network=traefik-public
     depends_on:
       - server
 
@@ -114,9 +112,6 @@ volumes:
 
 networks:
   traefik-public:
-    driver: overlay
-    attachable: true
-  swarm-traefik-public:
     driver: overlay
     attachable: true
   app-network:
