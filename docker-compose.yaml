@@ -33,16 +33,15 @@ services:
       dockerfile: Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - NODE_ENV=production
-      - IP=${IP}
-      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DATABASE}?authSource=admin&directConnection=true
     networks:
       - app-network
     restart: unless-stopped
     depends_on:
-      mongo:
-        condition: service_healthy
+      - mongo
+    environment:
+      - NODE_ENV=production
+      - IP=${IP}
+      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DATABASE}?authSource=admin&directConnection=true
 
   dashboard:
     container_name: dashboard
