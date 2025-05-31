@@ -101,5 +101,8 @@ volumes:
 networks:
   traefik-public:
     driver: bridge
+  swarm-traefik-public:
+    driver: bridge
+    name: swarm-traefik-public
   app-network:
     driver: bridge
