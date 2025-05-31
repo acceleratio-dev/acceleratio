@@ -73,7 +73,7 @@ services:
       - traefik.http.services.dashboard.loadbalancer.server.port=3000
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
-      - traefik.docker.network=traefik-public
+      - traefik.docker.network=acceleratio_traefik-public
     depends_on:
       - server
 
