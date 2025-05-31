@@ -70,6 +70,7 @@ services:
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
       - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
       - traefik.docker.network=acceleratio_traefik-public
+      - traefik.swarm.network=swarm-traefik-public
     depends_on:
       - server
 
