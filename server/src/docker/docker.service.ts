@@ -125,6 +125,11 @@ export class DockerService {
             MemoryBytes: input.config.memoryLimit * 1024 * 1024,
           },
         },
+        Networks: [
+          {
+            Target: 'swarm-traefik-public',
+          },
+        ],
       },
     });
     return (await service).id;
