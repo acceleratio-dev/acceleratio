@@ -66,14 +66,11 @@ export class DeploymentDomainService {
   async generateLabels(input: DomainInput[]) {
     const labels = {
       'traefik.enable': 'true',
-      'traefik.swarm': 'true',
-      'traefik.swarm.exposedByDefault': 'false',
-      'traefik.swarm.network': 'acceleratio_traefik-public',
-      'traefik.swarm.endpoint': 'tcp://127.0.0.1:2377',
       'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme':
         'https',
       'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent':
         'true',
+      'traefik.docker.network': 'acceleratio_traefik-public',
     };
 
     // Handle multiple domains by creating unique router names
