@@ -1,0 +1,9 @@
+query GetProjectById($id: String!) {
+  project: getProjectById(id: $id) {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+  }
+}

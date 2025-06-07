@@ -1,0 +1,18 @@
+query GetProjectServices($projectId: String!) {
+  services: getProjectServices(projectId: $projectId) {
+    id
+    name
+    activeDeployment {
+      id
+      config {
+        image
+      }
+    }
+    draftDeployment {
+      id
+      config {
+        image
+      }
+    }
+  }
+}

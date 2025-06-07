@@ -1,0 +1,109 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Pod {
+  id: ID!
+  kubernetesUid: String!
+  namespace: String!
+  image: String!
+  name: String!
+  status: String!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Node {
+  id: ID!
+  name: String!
+  role: String!
+  status: String!
+  externalIp: String!
+  systemUuid: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Project {
+  id: ID!
+  name: String!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type DeploymentConfig {
+  image: String
+}
+
+type Deployment {
+  id: ID!
+  serviceId: ID!
+  name: String!
+  triggered_by: String
+  provider: DeploymentProvider!
+  config: DeploymentConfig!
+  status: DeploymentStatus!
+  kubernetesName: String
+}
+
+enum DeploymentProvider {
+  GIT
+  DOCKER
+}
+
+enum DeploymentStatus {
+  DRAFT
+  ACTIVE
+  FINISHED
+}
+
+type Service {
+  id: ID!
+  projectId: ID!
+  name: String!
+}
+
+type ServiceWithDeployments {
+  id: ID!
+  projectId: ID!
+  name: String!
+  activeDeployment: Deployment
+  draftDeployment: Deployment
+}
+
+type Query {
+  pods: [Pod!]!
+  getNodes: [Node!]!
+  firstUserCreated: Boolean!
+  getProjects: [Project!]!
+  getProjectById(id: String!): Project!
+  getProjectServices(projectId: String!): [ServiceWithDeployments!]!
+}
+
+type Mutation {
+  createProject(createProjectInput: CreateProjectInput!): Project!
+  createService(createServiceInput: CreateServiceInput!): Service!
+  startServiceDeployment(serviceId: String!): Boolean!
+  stopServiceDeployment(serviceId: String!): Boolean!
+}
+
+input CreateProjectInput {
+  name: String!
+  description: String!
+}
+
+input CreateServiceInput {
+  name: String!
+  projectId: ID!
+  deploymentProvider: DeploymentProvider!
+  config: DeploymentConfigInput
+}
+
+input DeploymentConfigInput {
+  image: String
+}

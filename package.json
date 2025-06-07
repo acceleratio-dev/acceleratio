@@ -1,0 +1,13 @@
+{
+  "name": "acceleratio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "pnpm -r watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@7.33.2+sha512.ac34d6756eaf30f4c8ec1d356f2880deb65ad2d0a7a0c1705fca13f3c47da2ebe705f435d1866e01f7dc2a59f5f7d4b0ece7acd2df5381b03f745a036fa0f5b5"
+}

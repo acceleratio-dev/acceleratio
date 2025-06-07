@@ -1,0 +1,3 @@
+mutation StopServiceDeployment($serviceId: String!) {
+  stopServiceDeployment(serviceId: $serviceId)
+}

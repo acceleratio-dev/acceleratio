@@ -1,0 +1,7 @@
+mutation CreateService($createServiceInput: CreateServiceInput!) {
+  createService(createServiceInput: $createServiceInput) {
+    id
+    name
+    projectId
+  }
+}

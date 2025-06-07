@@ -1,0 +1,97 @@
+services:
+  traefik:
+    image: traefik:v3.4
+    container_name: traefik
+    ports:
+      - '80:80'
+      - '443:443'
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.network=acceleratio_traefik-public
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --log.level=INFO
+      - --api.dashboard=false
+    volumes:
+      - traefik-certificates:/letsencrypt
+    networks:
+      - traefik-public
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: unless-stopped
+
+  server:
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    container_name: server
+    ports:
+      - '8080:8080'
+    networks:
+      - app-network
+      - traefik-public
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.server-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)'
+      - 'traefik.http.routers.server-api.entrypoints=websecure'
+      - 'traefik.http.routers.server-api.tls=true'
+      - 'traefik.http.routers.server-api.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.server-api.middlewares=server-strip-prefix'
+      - 'traefik.http.middlewares.server-strip-prefix.stripprefix.prefixes=/api'
+      - 'traefik.http.services.server-api.loadbalancer.server.port=8080'
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - traefik
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+
+  dashboard:
+    build:
+      context: ./apps/dashboard
+      dockerfile: Dockerfile
+    container_name: dashboard
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://${DOMAIN}/api/graphql
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=https://${DOMAIN}
+      - DATABASE_URL=${DATABASE_URL}
+    networks:
+      - app-network
+      - traefik-public
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.dashboard-ui.rule=Host(`${DOMAIN}`)'
+      - 'traefik.http.routers.dashboard-ui.entrypoints=websecure'
+      - 'traefik.http.routers.dashboard-ui.tls=true'
+      - 'traefik.http.routers.dashboard-ui.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.dashboard-ui.loadbalancer.server.port=3000'
+    depends_on:
+      - server
+
+volumes:
+  traefik-certificates:
+    driver: local
+
+networks:
+  traefik-public:
+    driver: overlay
+    attachable: true
+  app-network:
+    driver: overlay
+    attachable: true

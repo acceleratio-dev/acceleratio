@@ -1,0 +1,12 @@
+query getNodes {
+  nodes: getNodes {
+    id
+    name
+    role
+    status
+    externalIp
+    systemUuid
+    createdAt
+    updatedAt
+  }
+}
