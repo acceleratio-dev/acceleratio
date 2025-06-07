@@ -23,7 +23,7 @@ export default async function AuthLayout({
     firstUserCreated = data?.firstUserCreated ?? false;
   } catch (error) {
     console.error('Failed to fetch first user status:', error);
-    firstUserCreated = true;
+    firstUserCreated = false;
   }
 
   if (!firstUserCreated) {
