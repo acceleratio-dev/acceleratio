@@ -6,11 +6,7 @@ import { apolloClient } from '@/lib/apollo-client';
 import { GetProjectByIdDocument } from '@/lib/graphql/generated';
 import { notFound } from 'next/navigation';
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ProjectPage({ params }: any) {
   const {
     data: { project },
   } = await apolloClient.query({
