@@ -18,6 +18,7 @@ services:
       - --api.dashboard=false
     volumes:
       - traefik-certificates:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - traefik-public
     deploy:
