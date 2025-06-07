@@ -13,12 +13,20 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data } = await apolloClient.query<FirstUserCreatedQuery>({
-    query: FirstUserCreatedDocument,
-    fetchPolicy: 'no-cache',
-  });
+  let firstUserCreated = false;
 
-  if (!data.firstUserCreated) {
+  try {
+    const { data } = await apolloClient.query<FirstUserCreatedQuery>({
+      query: FirstUserCreatedDocument,
+      fetchPolicy: 'no-cache',
+    });
+    firstUserCreated = data?.firstUserCreated ?? false;
+  } catch (error) {
+    console.error('Failed to fetch first user status:', error);
+    firstUserCreated = true;
+  }
+
+  if (!firstUserCreated) {
     return redirect('/getting-started');
   }
 
