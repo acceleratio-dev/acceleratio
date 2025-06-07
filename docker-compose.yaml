@@ -60,6 +60,11 @@ services:
     build:
       context: ./apps/dashboard
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://${DOMAIN}/api/graphql
+        - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+        - BETTER_AUTH_URL=https://${DOMAIN}
+        - DATABASE_URL=${DATABASE_URL}
     container_name: dashboard
     environment:
       - NODE_ENV=production
