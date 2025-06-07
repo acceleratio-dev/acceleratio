@@ -8,7 +8,7 @@ services:
     command:
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=acceleratio_traefik-public
+      - --providers.docker.network=traefik-public
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
