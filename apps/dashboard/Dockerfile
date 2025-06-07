@@ -30,7 +30,7 @@ RUN pnpm install
 
 RUN pnpm build
 
-
+RUN pnpm run auth-migrate
 
 FROM base AS runner
 WORKDIR /app
