@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN pnpm install --prod
+RUN pnpm install
 RUN pnpm build
 
 FROM base AS runner
