@@ -45,6 +45,9 @@ services:
       - 'traefik.http.routers.server-api.middlewares=server-strip-prefix'
       - 'traefik.http.middlewares.server-strip-prefix.stripprefix.prefixes=/api'
       - 'traefik.http.services.server-api.loadbalancer.server.port=8080'
+    volumes:
+      - ~/.kube/config:/root/.kube/config:ro
+      - ~/.kube/cache:/root/.kube/cache
     deploy:
       mode: replicated
       replicas: 1
