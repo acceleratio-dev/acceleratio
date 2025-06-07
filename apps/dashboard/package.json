@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "auth-migrate": "npx @better-auth/cli@latest migrate"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
