@@ -1,0 +1,7 @@
+query GetServiceDomains($serviceId: String!) {
+  domains: getServiceDomains(serviceId: $serviceId) {
+    path
+    domain
+    port
+  }
+}

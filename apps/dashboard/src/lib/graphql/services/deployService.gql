@@ -1,0 +1,3 @@
+mutation DeployService($serviceId: String!) {
+  deployService(serviceId: $serviceId)
+}

@@ -1,0 +1,10 @@
+mutation CreateEnvironmentVariable($createEnvironmentVariableInput: CreateEnvironmentVariableInput!) {
+  createEnvironmentVariable(createEnvironmentVariableInput: $createEnvironmentVariableInput) {
+    id
+    name
+    value
+    scope
+    updatedAt
+    createdAt
+  }
+}

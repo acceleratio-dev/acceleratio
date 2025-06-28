@@ -1,0 +1,3 @@
+query GetPodLogs($podName: String!, $serviceId: String!) {
+  getPodLogs(podName: $podName, serviceId: $serviceId)
+}

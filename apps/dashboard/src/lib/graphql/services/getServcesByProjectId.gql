@@ -1,0 +1,7 @@
+query GetServicesByProjectId($projectId: String!) {
+  services: getServicesByProjectId(projectId: $projectId) {
+    id
+    name
+    projectId
+  }
+}

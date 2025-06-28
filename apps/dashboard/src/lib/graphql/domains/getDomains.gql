@@ -1,0 +1,8 @@
+query GetDomains {
+  domains: getDomains {
+    id
+    url
+    createdAt
+    status
+  }
+}

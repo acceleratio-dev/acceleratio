@@ -1,0 +1,16 @@
+subscription ServiceDeployments($serviceId: String!) {
+  payload: serviceDeployments(serviceId: $serviceId) {
+    event_type
+    deployment {
+      id
+      serviceId
+      provider
+      image
+      internalName
+      replicas
+      status
+      createdAt
+      updatedAt
+    }
+  }
+}

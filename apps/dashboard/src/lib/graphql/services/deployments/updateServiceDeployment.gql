@@ -1,0 +1,11 @@
+mutation UpdateServiceDeployment($updateServiceDeploymentInput: UpdateServiceDeploymentInput!) {
+  updateServiceDeployment(updateServiceDeploymentInput: $updateServiceDeploymentInput) {
+    id
+    serviceId
+    provider
+    image
+    internalName
+    replicas
+    status
+  }
+}

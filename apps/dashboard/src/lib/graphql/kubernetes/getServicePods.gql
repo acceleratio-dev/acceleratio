@@ -1,0 +1,9 @@
+query getServicePods($serviceId: String!) {
+  pods: getServicePods(serviceId: $serviceId) {
+    name
+    status
+    node
+    image
+    startTime
+  }
+}

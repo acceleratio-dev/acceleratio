@@ -1,0 +1,3 @@
+mutation RestartPod($podName: String!, $serviceId: String!) {
+  restartPod(podName: $podName, serviceId: $serviceId)
+}

@@ -1,0 +1,3 @@
+mutation AssignDomainToService($assignDomainInput: AssignDomainInput!) {
+  assignDomainToService(assignDomainInput: $assignDomainInput)
+}

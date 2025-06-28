@@ -1,0 +1,12 @@
+subscription ServicePods($serviceId: String!) {
+  message: servicePods(serviceId: $serviceId) {
+    type
+    pod {
+      name
+      status
+      node
+      image
+      startTime
+    }
+  }
+}

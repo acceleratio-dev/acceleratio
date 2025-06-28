@@ -1,0 +1,14 @@
+query GetServiceDeployments($serviceId: String!) {
+  deployments: getServiceDeployments(serviceId: $serviceId) {
+    id
+    serviceId
+    provider
+    image
+    internalName
+    replicas
+    status
+
+    createdAt
+    updatedAt
+  }
+}

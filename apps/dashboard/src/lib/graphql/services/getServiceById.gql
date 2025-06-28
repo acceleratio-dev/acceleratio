@@ -1,0 +1,7 @@
+query GetServiceById($id: String!) {
+  service: getServiceById(id: $id) {
+    id
+    name
+    projectId
+  }
+}

@@ -1,0 +1,3 @@
+mutation RemoveDomainFromService($serviceId: String!, $url: String!, $path: String!) {
+  removeDomainFromService(serviceId: $serviceId, url: $url, path: $path)
+}

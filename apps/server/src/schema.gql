@@ -1,0 +1,190 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Pod {
+  name: String!
+  node: String!
+  image: String!
+  status: String!
+  startTime: String!
+}
+
+type PodMessage {
+  type: PodEventType!
+  pod: Pod!
+}
+
+enum PodEventType {
+  CREATED
+  DELETED
+  UPDATED
+}
+
+type Project {
+  id: String!
+  name: String!
+  description: String
+  kubernetesNamespace: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type EnvironmentVariable {
+  id: String!
+  scope: EnvironmentVariableScope!
+  serviceId: String
+  projectId: String
+  name: String!
+  value: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum EnvironmentVariableScope {
+  SERVICE
+  PROJECT
+}
+
+type Service {
+  id: String!
+  name: String!
+  projectId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ServiceDeployment {
+  id: String!
+  serviceId: String!
+  provider: ServiceDeploymentProvider!
+  image: String!
+  internalName: String
+  replicas: Float
+  status: ServiceDeploymentStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum ServiceDeploymentProvider {
+  DOCKER
+  GITHUB
+}
+
+enum ServiceDeploymentStatus {
+  ACTIVE
+  DRAFT
+  FINISHED
+}
+
+type ServiceDeploymentEventMessage {
+  event_type: ServiceDeploymentEventType!
+  deployment: ServiceDeployment!
+}
+
+enum ServiceDeploymentEventType {
+  DEPLOYMENT_CREATED
+  DEPLOYMENT_UPDATED
+  DEPLOYMENT_DEPLOYED
+}
+
+type Domain {
+  id: ID!
+  url: String!
+  status: DomainStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum DomainStatus {
+  PENDING
+  ACTIVE
+}
+
+type ServiceDomainsObject {
+  path: String!
+  domain: String!
+  port: Float!
+}
+
+type Query {
+  getServicePods(serviceId: String!): [Pod!]!
+  getServicesByProjectId(projectId: String!): [Service!]!
+  getServiceById(id: String!): Service!
+  getServiceDeployments(serviceId: String!): [ServiceDeployment!]!
+  getPodLogs(podName: String!, serviceId: String!): [String!]!
+  getProjects: [Project!]!
+  getProjectById(id: String!): Project!
+  getProjectEnvironmentVariables(projectId: String!): [EnvironmentVariable!]!
+  getServiceEnvironmentVariables(serviceId: String!): [EnvironmentVariable!]!
+  getDomains: [Domain!]!
+  getServiceDomains(serviceId: String!): [ServiceDomainsObject!]!
+}
+
+type Mutation {
+  updateService(updateServiceInput: UpdateServiceInput!): Service!
+  createService(createServiceInput: CreateServiceInput!): Service!
+  updateServiceDeployment(updateServiceDeploymentInput: UpdateServiceDeploymentInput!): ServiceDeployment!
+  deployService(serviceId: String!): Boolean!
+  stopService(serviceId: String!): Boolean!
+  restartPod(podName: String!, serviceId: String!): Boolean!
+  createProject(createProjectInput: CreateProjectInput!): Project!
+  createEnvironmentVariable(createEnvironmentVariableInput: CreateEnvironmentVariableInput!): EnvironmentVariable!
+  deleteEnvironmentVariable(id: String!): Boolean!
+  createDomain(createDomainInput: CreateDomainInput!): Domain!
+  removeDomainFromService(serviceId: String!, url: String!, path: String!): Boolean!
+  assignDomainToService(assignDomainInput: AssignDomainInput!): Boolean!
+}
+
+input UpdateServiceInput {
+  name: String!
+  serviceId: String!
+}
+
+input CreateServiceInput {
+  name: String!
+  projectId: String!
+}
+
+input UpdateServiceDeploymentInput {
+  serviceId: String!
+  internalName: String
+  provider: ServiceDeploymentProvider
+  image: String
+  replicas: Float
+}
+
+input CreateProjectInput {
+  name: String!
+  description: String
+}
+
+input CreateEnvironmentVariableInput {
+  name: String!
+  value: String!
+  scope: EnvironmentVariableScope!
+  serviceId: String
+  projectId: String
+}
+
+input CreateDomainInput {
+  url: String!
+}
+
+input AssignDomainInput {
+  domainId: String!
+  serviceId: String!
+  path: String!
+  port: Float!
+  stripPath: Boolean!
+}
+
+type Subscription {
+  servicePods(serviceId: String!): PodMessage!
+  serviceDeployments(serviceId: String!): ServiceDeploymentEventMessage!
+}

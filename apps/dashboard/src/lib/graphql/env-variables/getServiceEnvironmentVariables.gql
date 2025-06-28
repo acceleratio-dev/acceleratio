@@ -1,0 +1,10 @@
+query GetServiceEnvironmentVariables($serviceId: String!) {
+  variables: getServiceEnvironmentVariables(serviceId: $serviceId) {
+    id
+    name
+    value
+    scope
+    updatedAt
+    createdAt
+  }
+}
