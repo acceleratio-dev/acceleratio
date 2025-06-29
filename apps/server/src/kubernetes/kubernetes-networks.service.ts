@@ -66,48 +66,79 @@ export class KubernetesNetworksService {
     });
 
     if (existingMiddleware.items.length === 0) {
-      await this.customObjectsApi.createNamespacedCustomObject({
-        group: 'traefik.io',
-        version: 'v1alpha1',
-        namespace: 'ingress-namespace',
-        plural: 'middlewares',
-        body: {
-          apiVersion: 'traefik.io/v1alpha1',
-          kind: 'Middleware',
-          metadata: {
-            name: `${domain.replace(/\./g, '-')}-stripPrefix`,
-            labels: {
-              type: 'strip-prefix',
+      if (operation === 'add') {
+        const existingMiddleware = await this.customObjectsApi.listNamespacedCustomObject({
+          group: 'traefik.io',
+          version: 'v1alpha1',
+          namespace: 'ingress-namespace',
+          plural: 'middlewares',
+          labelSelector: `name=${routeName}, type=stripPrefix`,
+        });
+        if (existingMiddleware.items.length === 0) {
+          return true;
+        }
+
+        return await this.customObjectsApi.createNamespacedCustomObject({
+          group: 'traefik.io',
+          version: 'v1alpha1',
+          namespace: 'ingress-namespace',
+          plural: 'middlewares',
+          body: {
+            apiVersion: 'traefik.io/v1alpha1',
+            kind: 'Middleware',
+            metadata: {
+              name: `${domain.replace(/\./g, '-')}-strip-prefix`,
+              labels: {
+                type: 'strip-prefix',
+              },
+            },
+            spec: {
+              stripPrefix: {
+                prefixes: [prefix],
+              },
             },
           },
-          spec: {
-            stripPrefix: {
-              prefixes: [prefix],
-            },
-          },
-        },
-      });
+        });
+      }
     } else {
-      await this.customObjectsApi.replaceNamespacedCustomObject({
-        group: 'traefik.io',
-        version: 'v1alpha1',
-        namespace: 'ingress-namespace',
-        plural: 'middlewares',
-        name: `${domain.replace(/\./g, '-')}-stripPrefix`,
-        body: {
-          ...existingMiddleware.items[0],
-          spec: {
-            ...existingMiddleware.items[0].spec,
-            stripPrefix: {
-              ...existingMiddleware.items[0].spec.stripPrefix,
-              prefixes:
-                operation === 'add'
-                  ? [...existingMiddleware.items[0].spec.stripPrefix.prefixes, prefix]
-                  : existingMiddleware.items[0].spec.stripPrefix.prefixes.filter((p) => p !== prefix),
+      const currentPrefixes = existingMiddleware.items[0].spec.stripPrefix.prefixes || [];
+      let updatedPrefixes: string[];
+
+      if (operation === 'add') {
+        // Only add if not already present
+        updatedPrefixes = currentPrefixes.includes(prefix) ? currentPrefixes : [...currentPrefixes, prefix];
+      } else {
+        // Remove the prefix
+        updatedPrefixes = currentPrefixes.filter((p) => p !== prefix);
+      }
+
+      // If no prefixes left after removal, delete the middleware
+      if (operation === 'remove' && updatedPrefixes.length === 0) {
+        await this.customObjectsApi.deleteNamespacedCustomObject({
+          group: 'traefik.io',
+          version: 'v1alpha1',
+          namespace: 'ingress-namespace',
+          plural: 'middlewares',
+          name: `${domain.replace(/\./g, '-')}-strip-prefix`,
+        });
+      } else {
+        await this.customObjectsApi.replaceNamespacedCustomObject({
+          group: 'traefik.io',
+          version: 'v1alpha1',
+          namespace: 'ingress-namespace',
+          plural: 'middlewares',
+          name: `${domain.replace(/\./g, '-')}-strip-prefix`,
+          body: {
+            ...existingMiddleware.items[0],
+            spec: {
+              ...existingMiddleware.items[0].spec,
+              stripPrefix: {
+                prefixes: updatedPrefixes,
+              },
             },
           },
-        },
-      });
+        });
+      }
     }
   }
 
@@ -117,13 +148,49 @@ export class KubernetesNetworksService {
     formattedPrefix,
     serviceUuid,
     serviceNamespace,
+    stripPrefix,
   }: {
     domain: string;
     prefix: string;
     formattedPrefix: string;
     serviceUuid: string;
     serviceNamespace: string;
+    stripPrefix: boolean;
   }) {
+    const secretName = `${domain.replace(/\./g, '-')}-tls`;
+    try {
+      await this.kubernetesApi.readNamespacedSecret({
+        name: secretName,
+        namespace: 'ingress-namespace',
+      });
+    } catch (error) {
+      await this.customObjectsApi.createNamespacedCustomObject({
+        group: 'cert-manager.io',
+        version: 'v1',
+        namespace: 'ingress-namespace',
+        plural: 'certificates',
+        body: {
+          apiVersion: 'cert-manager.io/v1',
+          kind: 'Certificate',
+          metadata: {
+            name: secretName,
+            namespace: 'ingress-namespace',
+          },
+          spec: {
+            secretName: secretName,
+            issuerRef: {
+              name: 'letsencrypt-prod',
+              kind: 'ClusterIssuer',
+            },
+            dnsNames: [domain],
+            usages: ['digital signature', 'key encipherment'],
+            duration: '2160h',
+            renewBefore: '360h',
+          },
+        },
+      });
+    }
+
     await this.customObjectsApi.createNamespacedCustomObject({
       group: 'traefik.io',
       version: 'v1alpha1',
@@ -159,10 +226,11 @@ export class KubernetesNetworksService {
                   port: 80,
                 },
               ],
+              middlewares: stripPrefix ? [{ name: `${domain.replace(/\./g, '-')}-strip-prefix` }] : [],
             },
           ],
           tls: {
-            secretName: `${domain.replace(/\./g, '-')}-tls`,
+            secretName: secretName,
           },
         },
       },
@@ -188,38 +256,61 @@ export class KubernetesNetworksService {
 
     const formattedPrefix = prefix ? prefix.replace(/\//g, '') : 'root';
 
-    await this.kubernetesApi.createNamespacedService({
-      namespace: serviceNamespace,
-      body: {
-        apiVersion: 'v1',
-        kind: 'Service',
-        metadata: {
-          name: `service-${serviceId}-${formattedPrefix}`,
-          namespace: serviceNamespace,
-          labels: {
-            domain: domain,
-            service: serviceId,
-            type: 'domain-service',
+    try {
+      const existingService = await this.kubernetesApi.readNamespacedService({
+        name: `service-${serviceId}-${formattedPrefix}`,
+        namespace: serviceNamespace,
+      });
+
+      await this.kubernetesApi.replaceNamespacedService({
+        namespace: serviceNamespace,
+        name: `service-${serviceId}-${formattedPrefix}`,
+        body: {
+          ...existingService,
+          spec: {
+            selector: {
+              service: serviceId,
+            },
+            ports: [{ port: port, targetPort: port }],
+            type: 'ClusterIP',
           },
         },
-        spec: {
-          selector: {
-            service: serviceId,
+      });
+    } catch (error) {
+      await this.kubernetesApi.createNamespacedService({
+        namespace: serviceNamespace,
+        body: {
+          apiVersion: 'v1',
+          kind: 'Service',
+          metadata: {
+            name: `service-${serviceId}-${formattedPrefix}`,
+            namespace: serviceNamespace,
+            labels: {
+              domain: domain,
+              service: serviceId,
+              type: 'domain-service',
+            },
           },
-          ports: [{ port: port, targetPort: port }],
-          type: 'ClusterIP',
+          spec: {
+            selector: {
+              service: serviceId,
+            },
+            ports: [{ port: port, targetPort: port }],
+            type: 'ClusterIP',
+          },
         },
-      },
-    });
+      });
+    }
 
     const existingIngressRoute = await this.getIngressRoute(domain);
     if (!existingIngressRoute) {
       await this.createIngressRoute({
         domain,
-        prefix: formattedPrefix,
+        prefix: prefix,
         formattedPrefix: formattedPrefix,
         serviceUuid: serviceId,
         serviceNamespace: serviceNamespace,
+        stripPrefix: stripPrefix,
       });
       if (stripPrefix) {
         await this.updateStripPrefix(domain, `domain-${domain.replace(/\./g, '-')}`, prefix, 'add');
@@ -248,7 +339,7 @@ export class KubernetesNetworksService {
             name: `service-${serviceId}-${formattedPrefix}`,
             namespace: serviceNamespace,
             port: port,
-            middlewares: stripPrefix ? [`${domain.replace(/\./g, '-')}-stripPrefix`] : [],
+            middlewares: stripPrefix ? [`${domain.replace(/\./g, '-')}-strip-prefix`] : [],
           },
         ],
       };
@@ -261,7 +352,7 @@ export class KubernetesNetworksService {
             name: `service-${serviceId}-${formattedPrefix}`,
             namespace: serviceNamespace,
             port: port,
-            middlewares: stripPrefix ? [`${domain.replace(/\./g, '-')}-stripPrefix`] : [],
+            middlewares: stripPrefix ? [`${domain.replace(/\./g, '-')}-strip-prefix`] : [],
           },
         ],
       });
@@ -326,6 +417,8 @@ export class KubernetesNetworksService {
       plural: 'ingressroutes',
     });
 
+    let serviceNamespace: string | null = null;
+
     for (const ingressRoute of ingressList.items) {
       const { domain } = parseTraefikRule(ingressRoute.spec.routes[0]?.match || '');
 
@@ -336,7 +429,18 @@ export class KubernetesNetworksService {
             (service) => service.name === `service-${serviceId}-${formattedPrefix}`,
           );
 
+          if (route.middlewares) {
+            this.updateStripPrefix(domain, ingressRoute.metadata.name, path, 'remove');
+          }
+
           if (hasMatchingService) {
+            const matchingService = routeServices.find(
+              (service) => service.name === `service-${serviceId}-${formattedPrefix}`,
+            );
+            if (matchingService) {
+              serviceNamespace = matchingService.namespace;
+            }
+
             const { domain: routeDomain, prefix: routePrefix } = parseTraefikRule(route.match);
             return !(routeDomain === url && (routePrefix || '/') === path);
           }
@@ -344,7 +448,6 @@ export class KubernetesNetworksService {
         });
 
         if (updatedRoutes.length === 0) {
-          // If no routes left, delete the entire ingress route
           await this.customObjectsApi.deleteNamespacedCustomObject({
             group: 'traefik.io',
             version: 'v1alpha1',
@@ -353,7 +456,6 @@ export class KubernetesNetworksService {
             name: ingressRoute.metadata.name,
           });
         } else {
-          // Update the ingress route with remaining routes
           ingressRoute.spec.routes = updatedRoutes;
           await this.customObjectsApi.replaceNamespacedCustomObject({
             group: 'traefik.io',
@@ -365,7 +467,6 @@ export class KubernetesNetworksService {
           });
         }
 
-        // Also remove the service if it's no longer used by any ingress route
         const allIngressRoutes = await this.customObjectsApi.listNamespacedCustomObject({
           group: 'traefik.io',
           version: 'v1alpha1',
@@ -379,16 +480,15 @@ export class KubernetesNetworksService {
           ),
         );
 
-        if (!serviceStillUsed) {
+        if (!serviceStillUsed && serviceNamespace) {
           try {
             await this.kubernetesApi.deleteNamespacedService({
               name: `service-${serviceId}-${formattedPrefix}`,
-              namespace: ingressRoute.spec.routes[0]?.services[0]?.namespace || 'default',
+              namespace: serviceNamespace,
             });
           } catch (error) {
-            // Service might already be deleted or not exist
-            console.log(`Service service-${serviceId} not found or already deleted`);
-            throw Error(`Domain ${url}${formattedPrefix} not found or already deleted`);
+            console.log(`Service service-${serviceId}-${formattedPrefix} not found or already deleted`);
+            throw Error(`Domain ${url}${path} not found or already deleted`);
           }
         }
 
