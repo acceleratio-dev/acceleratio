@@ -34,7 +34,11 @@ import { EnvironmentVariablesModule } from './environment-variables/environment-
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: configService.get('config.database.url'),
+        host: configService.get('config.database.host'),
+        username: configService.get('config.database.user'),
+        password: configService.get('config.database.password'),
+        database: configService.get('config.database.db'),
+        ssl: true,
         autoLoadEntities: true,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
