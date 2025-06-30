@@ -1,13 +1,27 @@
 #!/bin/bash
 
 OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
-OS_VERSION=$(uname -r)
 
-case "$OS_TYPE" in
+# Detect OS distribution properly
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS_DISTRO=$ID
+elif [ -f /etc/redhat-release ]; then
+    OS_DISTRO=$(cat /etc/redhat-release | tr '[:upper:]' '[:lower:]' | sed 's/^\([a-z]*\).*/\1/')
+elif [ -f /etc/debian_version ]; then
+    OS_DISTRO="debian"
+elif [ -f /etc/alpine-release ]; then
+    OS_DISTRO="alpine"
+else
+    OS_DISTRO="unknown"
+fi
+
+case "$OS_DISTRO" in
 arch | ubuntu | debian | raspbian | centos | fedora | rhel | ol | rocky | sles | opensuse-leap | opensuse-tumbleweed | almalinux | amzn | alpine) ;;
 *)
     echo "This script only supports Debian, Redhat, Arch Linux, Alpine Linux, or SLES based operating systems for now."
-    exit
+    echo "Detected OS: $OS_DISTRO"
+    exit 1
     ;;
 esac
 
