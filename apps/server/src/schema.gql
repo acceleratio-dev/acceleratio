@@ -114,6 +114,7 @@ type ServiceDomainsObject {
 
 type Query {
   getServicePods(serviceId: String!): [Pod!]!
+  getLoadBalancerIP: String!
   getServicesByProjectId(projectId: String!): [Service!]!
   getServiceById(id: String!): Service!
   getServiceDeployments(serviceId: String!): [ServiceDeployment!]!
@@ -136,6 +137,7 @@ type Mutation {
   createProject(createProjectInput: CreateProjectInput!): Project!
   createEnvironmentVariable(createEnvironmentVariableInput: CreateEnvironmentVariableInput!): EnvironmentVariable!
   deleteEnvironmentVariable(id: String!): Boolean!
+  updateDomainStatuses: Boolean!
   createDomain(createDomainInput: CreateDomainInput!): Domain!
   removeDomainFromService(serviceId: String!, url: String!, path: String!): Boolean!
   assignDomainToService(assignDomainInput: AssignDomainInput!): Boolean!

@@ -1,0 +1,3 @@
+query GetLoadBalancerIP {
+  ip: getLoadBalancerIP
+}

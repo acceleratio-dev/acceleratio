@@ -1,16 +1,17 @@
 import { DashboardLayout } from '@/components/dashboard-layout';
 import { CreateDomainDialog } from '@/components/domains/create-domain-dialog';
 import { DomainsList } from '@/components/domains/domains-list';
-import { Button } from '@/components/ui/button';
+import { InstructionSteps } from '@/components/domains/instruction-steps';
+import { RefreshDomainStatuses } from '@/components/domains/refresh-domain-statuses';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TbRefresh } from 'react-icons/tb';
 
 export default function Domains() {
   return (
     <DashboardLayout>
       <div className="flex gap-4 justify-between wrapper">
-        <div className="w-3/4">
+        <div className="w-3/4 space-y-4">
           <DomainsList />
+          <InstructionSteps />
         </div>
         <div className="w-1/4">
           <Card>
@@ -20,10 +21,7 @@ export default function Domains() {
             </CardHeader>
             <CardContent className="space-y-2">
               <CreateDomainDialog />
-              <Button className="w-full" variant={'outline'} size={'sm'}>
-                <TbRefresh />
-                Refresh statuses
-              </Button>
+              <RefreshDomainStatuses />
             </CardContent>
           </Card>
         </div>

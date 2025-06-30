@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Domain } from './entities/domain.entity';
+import { Domain, DomainStatus } from './entities/domain.entity';
 import { CreateDomainInput } from './dto/create-domain.input';
 import { AssignDomainInput } from './dto/assign-domain.input';
 import { ServicesService } from 'src/services/services.service';
 import { KubernetesNetworksService } from 'src/kubernetes/kubernetes-networks.service';
+import { resolve4 } from 'dns';
 
 @Injectable()
 export class DomainsService {
@@ -18,6 +19,27 @@ export class DomainsService {
 
   async getDomains() {
     return this.domainRepository.find();
+  }
+
+  async updateDomainStatuses() {
+    const domains = await this.domainRepository.find();
+    const loadBalancerIP = await this.kubernetesNetworksService.getLoadBalancerIP();
+
+    for (const domain of domains) {
+      await resolve4(domain.url, async (err, addresses) => {
+        if (err) {
+          throw new Error('Failed to resolve domain');
+        }
+        if (addresses.includes(loadBalancerIP) && domain.status !== DomainStatus.ACTIVE) {
+          domain.status = DomainStatus.ACTIVE;
+        } else if (domain.status !== DomainStatus.PENDING) {
+          domain.status = DomainStatus.PENDING;
+        }
+        await this.domainRepository.save(domain);
+      });
+    }
+
+    return true;
   }
 
   async createDomain(createDomainInput: CreateDomainInput) {

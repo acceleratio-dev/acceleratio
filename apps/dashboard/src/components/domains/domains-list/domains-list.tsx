@@ -3,7 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GetDomainsQuery, useGetDomainsQuery } from '@/lib/graphql/generated';
 import { FaLinkSlash } from 'react-icons/fa6';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import moment from 'moment';
+import { DomainStatus } from './domain-status';
 
 export const DomainsList = () => {
   const { data, loading } = useGetDomainsQuery({
@@ -19,17 +21,26 @@ export const DomainsList = () => {
         <CardDescription>You can assign domains to the services in their details page.</CardDescription>
       </CardHeader>
       <CardContent>
-        {loading ? (
-          <LoadingState />
-        ) : data?.domains.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div className="space-y-2">
-            {data?.domains.map((domain) => (
-              <DomainItem key={domain.id} domain={domain} />
-            ))}
-          </div>
-        )}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader className="bg-slate-100">
+              <TableRow>
+                <TableHead className="w-1/3">Domain</TableHead>
+                <TableHead className="w-1/3">Status</TableHead>
+                <TableHead className="w-1/3">Created at</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <LoadingState />
+              ) : data?.domains.length === 0 ? (
+                <EmptyState />
+              ) : (
+                data?.domains.map((domain) => <DomainItem key={domain.id} domain={domain} />)
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
@@ -37,24 +48,29 @@ export const DomainsList = () => {
 
 const DomainItem = ({ domain }: { domain: GetDomainsQuery['domains'][number] }) => {
   return (
-    <div className="flex items-center justify-between">
-      <div>{domain.url}</div>
-      <div className="text-xs text-slate-500 font-medium">{moment(domain.createdAt).format('DD/MM/YYYY')}</div>
-    </div>
+    <TableRow className='h-10'>
+      <TableCell className="font-medium">{domain.url}</TableCell>
+      <TableCell>
+        <DomainStatus status={domain.status} />
+      </TableCell>
+      <TableCell className="text-xs text-slate-500 font-medium">
+        {moment(domain.createdAt).format('DD/MM/YYYY')}
+      </TableCell>
+    </TableRow>
   );
 };
 
 const LoadingState = () => {
   return (
-    <div className="space-y-3">
+    <>
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="flex items-center space-x-4">
-          <div className="h-4 w-4 bg-slate-200 rounded animate-pulse"></div>
-          <div className="h-4 bg-slate-200 rounded animate-pulse flex-1"></div>
-          <div className="h-4 w-20 bg-slate-200 rounded animate-pulse"></div>
-        </div>
+        <TableRow className="h-10" key={i}>
+          <TableCell className="bg-slate-100 animate-pulse"></TableCell>
+          <TableCell className="bg-slate-100 animate-pulse flex-1"></TableCell>
+          <TableCell className="bg-slate-100 animate-pulse"></TableCell>
+        </TableRow>
       ))}
-    </div>
+    </>
   );
 };
 

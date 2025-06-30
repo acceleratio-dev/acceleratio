@@ -91,6 +91,7 @@ export type Mutation = {
   removeDomainFromService: Scalars['Boolean']['output'];
   restartPod: Scalars['Boolean']['output'];
   stopService: Scalars['Boolean']['output'];
+  updateDomainStatuses: Scalars['Boolean']['output'];
   updateService: Service;
   updateServiceDeployment: ServiceDeployment;
 };
@@ -192,6 +193,7 @@ export type Project = {
 export type Query = {
   __typename?: 'Query';
   getDomains: Array<Domain>;
+  getLoadBalancerIP: Scalars['String']['output'];
   getPodLogs: Array<Scalars['String']['output']>;
   getProjectById: Project;
   getProjectEnvironmentVariables: Array<EnvironmentVariable>;
@@ -366,6 +368,11 @@ export type RemoveDomainFromServiceMutationVariables = Exact<{
 
 export type RemoveDomainFromServiceMutation = { __typename?: 'Mutation', removeDomainFromService: boolean };
 
+export type UpdateDomainStatusesMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UpdateDomainStatusesMutation = { __typename?: 'Mutation', updateDomainStatuses: boolean };
+
 export type CreateEnvironmentVariableMutationVariables = Exact<{
   createEnvironmentVariableInput: CreateEnvironmentVariableInput;
 }>;
@@ -386,6 +393,11 @@ export type GetServiceEnvironmentVariablesQueryVariables = Exact<{
 
 
 export type GetServiceEnvironmentVariablesQuery = { __typename?: 'Query', variables: Array<{ __typename?: 'EnvironmentVariable', id: string, name: string, value: string, scope: EnvironmentVariableScope, updatedAt: any, createdAt: any }> };
+
+export type GetLoadBalancerIpQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetLoadBalancerIpQuery = { __typename?: 'Query', ip: string };
 
 export type GetServicePodsQueryVariables = Exact<{
   serviceId: Scalars['String']['input'];
@@ -676,6 +688,36 @@ export function useRemoveDomainFromServiceMutation(baseOptions?: Apollo.Mutation
 export type RemoveDomainFromServiceMutationHookResult = ReturnType<typeof useRemoveDomainFromServiceMutation>;
 export type RemoveDomainFromServiceMutationResult = Apollo.MutationResult<RemoveDomainFromServiceMutation>;
 export type RemoveDomainFromServiceMutationOptions = Apollo.BaseMutationOptions<RemoveDomainFromServiceMutation, RemoveDomainFromServiceMutationVariables>;
+export const UpdateDomainStatusesDocument = gql`
+    mutation UpdateDomainStatuses {
+  updateDomainStatuses
+}
+    `;
+export type UpdateDomainStatusesMutationFn = Apollo.MutationFunction<UpdateDomainStatusesMutation, UpdateDomainStatusesMutationVariables>;
+
+/**
+ * __useUpdateDomainStatusesMutation__
+ *
+ * To run a mutation, you first call `useUpdateDomainStatusesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDomainStatusesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDomainStatusesMutation, { data, loading, error }] = useUpdateDomainStatusesMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUpdateDomainStatusesMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDomainStatusesMutation, UpdateDomainStatusesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDomainStatusesMutation, UpdateDomainStatusesMutationVariables>(UpdateDomainStatusesDocument, options);
+      }
+export type UpdateDomainStatusesMutationHookResult = ReturnType<typeof useUpdateDomainStatusesMutation>;
+export type UpdateDomainStatusesMutationResult = Apollo.MutationResult<UpdateDomainStatusesMutation>;
+export type UpdateDomainStatusesMutationOptions = Apollo.BaseMutationOptions<UpdateDomainStatusesMutation, UpdateDomainStatusesMutationVariables>;
 export const CreateEnvironmentVariableDocument = gql`
     mutation CreateEnvironmentVariable($createEnvironmentVariableInput: CreateEnvironmentVariableInput!) {
   createEnvironmentVariable(
@@ -792,6 +834,43 @@ export type GetServiceEnvironmentVariablesQueryHookResult = ReturnType<typeof us
 export type GetServiceEnvironmentVariablesLazyQueryHookResult = ReturnType<typeof useGetServiceEnvironmentVariablesLazyQuery>;
 export type GetServiceEnvironmentVariablesSuspenseQueryHookResult = ReturnType<typeof useGetServiceEnvironmentVariablesSuspenseQuery>;
 export type GetServiceEnvironmentVariablesQueryResult = Apollo.QueryResult<GetServiceEnvironmentVariablesQuery, GetServiceEnvironmentVariablesQueryVariables>;
+export const GetLoadBalancerIpDocument = gql`
+    query GetLoadBalancerIP {
+  ip: getLoadBalancerIP
+}
+    `;
+
+/**
+ * __useGetLoadBalancerIpQuery__
+ *
+ * To run a query within a React component, call `useGetLoadBalancerIpQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLoadBalancerIpQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLoadBalancerIpQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetLoadBalancerIpQuery(baseOptions?: Apollo.QueryHookOptions<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>(GetLoadBalancerIpDocument, options);
+      }
+export function useGetLoadBalancerIpLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>(GetLoadBalancerIpDocument, options);
+        }
+export function useGetLoadBalancerIpSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>(GetLoadBalancerIpDocument, options);
+        }
+export type GetLoadBalancerIpQueryHookResult = ReturnType<typeof useGetLoadBalancerIpQuery>;
+export type GetLoadBalancerIpLazyQueryHookResult = ReturnType<typeof useGetLoadBalancerIpLazyQuery>;
+export type GetLoadBalancerIpSuspenseQueryHookResult = ReturnType<typeof useGetLoadBalancerIpSuspenseQuery>;
+export type GetLoadBalancerIpQueryResult = Apollo.QueryResult<GetLoadBalancerIpQuery, GetLoadBalancerIpQueryVariables>;
 export const GetServicePodsDocument = gql`
     query getServicePods($serviceId: String!) {
   pods: getServicePods(serviceId: $serviceId) {

@@ -405,6 +405,19 @@ export class KubernetesNetworksService {
     return response;
   }
 
+  async getLoadBalancerIP() {
+    const nodes = await this.kubernetesApi.listNode({
+      labelSelector: 'node-role.kubernetes.io/master=true',
+    });
+    const externalIP = nodes?.items[0]?.metadata?.annotations?.['k3s.io/external-ip'];
+
+    if (!externalIP) {
+      throw new Error('No public IP found');
+    }
+
+    return externalIP;
+  }
+
   async removeServiceDomain(serviceId: string, url: string, path: string) {
     await this.ensureNamespace('ingress-namespace');
 

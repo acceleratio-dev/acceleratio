@@ -4,17 +4,24 @@ import { KubernetesService } from './kubernetes.service';
 import { Pod } from './dto/pod.object';
 import { PubSub } from 'graphql-subscriptions';
 import { PodMessage } from './dto/pod.message';
+import { KubernetesNetworksService } from './kubernetes-networks.service';
 
 @Resolver()
 export class KubernetesResolver {
   constructor(
     private readonly kubernetesService: KubernetesService,
+    private readonly kubernetesNetworksService: KubernetesNetworksService,
     @Inject('PODS_PUBSUB') private readonly podsPubSub: PubSub,
   ) {}
 
   @Query(() => [Pod])
   async getServicePods(@Args('serviceId') serviceId: string) {
     return this.kubernetesService.getServicePods(serviceId);
+  }
+
+  @Query(() => String)
+  async getLoadBalancerIP() {
+    return this.kubernetesNetworksService.getLoadBalancerIP();
   }
 
   @Subscription(() => PodMessage, {

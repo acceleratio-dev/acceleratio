@@ -14,6 +14,11 @@ export class DomainsResolver {
     return this.domainsService.getDomains();
   }
 
+  @Mutation(() => Boolean)
+  async updateDomainStatuses() {
+    return this.domainsService.updateDomainStatuses();
+  }
+
   @Query(() => [ServiceDomainsObject])
   async getServiceDomains(@Args('serviceId') serviceId: string) {
     return this.domainsService.listServiceDomains(serviceId);

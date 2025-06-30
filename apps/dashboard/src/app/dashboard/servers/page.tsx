@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TbEdit, TbPlus, TbRefresh } from 'react-icons/tb';
+import { TbPlus, TbRefresh } from 'react-icons/tb';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BsThreeDots } from 'react-icons/bs';
 
