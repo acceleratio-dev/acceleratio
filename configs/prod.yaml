@@ -87,7 +87,6 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: standard
 
 ---
 apiVersion: apps/v1
@@ -171,7 +170,6 @@ spec:
     - port: 5432
       targetPort: 5432
   type: ClusterIP
-
 ---
 apiVersion: v1
 kind: Secret
