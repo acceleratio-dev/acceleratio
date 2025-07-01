@@ -117,10 +117,6 @@ else
     exit 1
 fi
 
-mkdir /root/acceleratio
-
-cd /root/acceleratio
-
 echo "Applying configs..."
 kubectl apply -f configs/prod.yaml
 echo "Configs applied successfully"
