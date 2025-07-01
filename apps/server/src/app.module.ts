@@ -38,7 +38,7 @@ import { EnvironmentVariablesModule } from './environment-variables/environment-
         username: configService.get('config.database.user'),
         password: configService.get('config.database.password'),
         database: configService.get('config.database.db'),
-        ssl: true,
+        ssl: configService.get('config.database.ssl'),
         autoLoadEntities: true,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
