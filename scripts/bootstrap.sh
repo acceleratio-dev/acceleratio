@@ -42,6 +42,16 @@ MACHINE_IP=$(hostname -I | awk '{print $1}')
 echo "Setting NEXT_PUBLIC_API_URL to machine IP: $MACHINE_IP"
 sed -i "s|NEXT_PUBLIC_API_URL=.*|NEXT_PUBLIC_API_URL=$MACHINE_IP|" .env
 
+echo "Generating secure PostgreSQL credentials..."
+POSTGRES_USER="user_$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-16)"
+POSTGRES_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/")
+
+echo "Setting POSTGRES_USER to: $POSTGRES_USER"
+echo "Setting POSTGRES_PASSWORD to: $POSTGRES_PASSWORD"
+
+sed -i "s|POSTGRES_USER=.*|POSTGRES_USER=$POSTGRES_USER|" .env
+sed -i "s|POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=$POSTGRES_PASSWORD|" .env
+
 echo "Creating ConfigMap from .env file..."
 if [ -f ".env" ]; then
     echo "Creating ConfigMap from .env file..."
