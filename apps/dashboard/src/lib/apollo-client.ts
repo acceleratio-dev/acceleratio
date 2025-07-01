@@ -5,12 +5,12 @@ import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 
 const httpLink = new HttpLink({
-  uri: `${process.env.NODE_ENV === 'production' ? 'https' : 'http'}://${env('NEXT_PUBLIC_API_URL')}/graphql`,
+  uri: `${env('NEXT_PUBLIC_SSL_MODE') === 'true' ? 'https' : 'http'}://${env('NEXT_PUBLIC_API_URL')}/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: `${process.env.NODE_ENV === 'production' ? 'wss' : 'ws'}://${env('NEXT_PUBLIC_API_URL')}/graphql`,
+    url: `${env('NEXT_PUBLIC_SSL_MODE') === 'true' ? 'wss' : 'ws'}://${env('NEXT_PUBLIC_API_URL')}/graphql`,
   }),
 );
 

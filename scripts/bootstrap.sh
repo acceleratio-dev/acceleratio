@@ -125,4 +125,6 @@ echo "Applying configs..."
 kubectl apply -f configs/prod.yaml
 echo "Configs applied successfully"
 
-echo "Bootstrap complete!"
+echo "Bootstrap complete, please wait for the services to be ready..."
+
+echo "You can access the dashboard at http://$MACHINE_IP"
