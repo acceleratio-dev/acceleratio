@@ -171,16 +171,6 @@ spec:
       targetPort: 5432
   type: ClusterIP
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: postgres-secret
-type: Opaque
-data:
-  username: cG9zdGdyZXM=
-  password: cGFzc3dvcmQxMjM=
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
