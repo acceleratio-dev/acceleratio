@@ -70,9 +70,8 @@ spec:
                 name: app-config
       volumes:
         - name: token-volume
-          hostPath:
-            path: /var/lib/rancher/k3s/server
-            type: Directory
+          secret:
+            secretName: k3s-node-token
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

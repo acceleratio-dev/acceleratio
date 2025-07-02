@@ -117,10 +117,28 @@ else
     exit 1
 fi
 
+echo "Creating K3s node token secret..."
+NODE_TOKEN=$(cat /var/lib/rancher/k3s/server/node-token | base64 -w0)
+
+cat > /tmp/k3s-node-token-secret.yaml << EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: k3s-node-token
+  namespace: default
+type: Opaque
+data:
+  node-token: $NODE_TOKEN
+EOF
+
+kubectl apply -f /tmp/k3s-node-token-secret.yaml
+rm /tmp/k3s-node-token-secret.yaml
+echo "K3s node token secret 'k3s-node-token' created successfully"
+
 echo "Applying configs..."
 kubectl apply -f configs/prod.yaml
 echo "Configs applied successfully"
 
-echo "Bootstrap complete, please wait for the services to be ready..."
+echo "Bootstrap complete, please wait for the services to be ready (1-2 minutes)..."
 
-echo "You can access the dashboard at http://$MACHINE_IP"
+echo "You can access the dashboard later at http://$MACHINE_IP"
