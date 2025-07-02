@@ -409,7 +409,7 @@ export class KubernetesNetworksService {
     const nodes = await this.kubernetesApi.listNode({
       labelSelector: 'node-role.kubernetes.io/master=true',
     });
-    const externalIP = nodes?.items[0]?.metadata?.annotations?.['k3s.io/external-ip'];
+    const externalIP = nodes?.items[0]?.metadata?.annotations?.['flannel.alpha.coreos.com/public-ip'];
 
     if (!externalIP) {
       throw new Error('No public IP found');

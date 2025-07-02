@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { CoreV1Api, KubeConfig, Metrics, Watch } from '@kubernetes/client-node';
+import { CoreV1Api, Exec, KubeConfig, Metrics, Watch } from '@kubernetes/client-node';
 import { AppsV1Api } from '@kubernetes/client-node';
 import { NetworkingV1Api } from '@kubernetes/client-node';
 import { formatDeployment } from './utils/formatDeployment';
@@ -14,6 +14,7 @@ export class KubernetesService implements OnModuleInit {
   private readonly appsV1Api: AppsV1Api;
   private readonly watchApi: Watch;
   private readonly metricsClient: Metrics;
+  private readonly execApi: Exec;
 
   constructor(@Inject('PODS_PUBSUB') private readonly podsPubSub: PubSub) {
     const kc = new KubeConfig();
@@ -38,6 +39,17 @@ export class KubernetesService implements OnModuleInit {
     this.appsV1Api = kc.makeApiClient(AppsV1Api);
     this.metricsClient = new Metrics(kc);
     this.watchApi = new Watch(kc);
+    this.execApi = new Exec(kc);
+  }
+
+  getApis() {
+    return {
+      kubernetesApi: this.kubernetesApi,
+      appsV1Api: this.appsV1Api,
+      watchApi: this.watchApi,
+      metricsClient: this.metricsClient,
+      execApi: this.execApi,
+    };
   }
 
   async createNamespace() {
@@ -196,6 +208,10 @@ export class KubernetesService implements OnModuleInit {
   }
 
   async onModuleInit() {
+    this.startPodWatch();
+  }
+
+  private startPodWatch() {
     this.watchApi.watch(
       '/api/v1/pods',
       {},
@@ -225,7 +241,11 @@ export class KubernetesService implements OnModuleInit {
         }
       },
       (err) => {
-        console.error(err);
+        console.error('Pod watch failed:', err);
+        console.log('Retrying pod watch in 5 seconds...');
+        setTimeout(() => {
+          this.startPodWatch();
+        }, 5000);
       },
     );
   }

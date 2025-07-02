@@ -159,6 +159,19 @@ export type MutationUpdateServiceDeploymentArgs = {
   updateServiceDeploymentInput: UpdateServiceDeploymentInput;
 };
 
+export type NodeEntity = {
+  __typename?: 'NodeEntity';
+  cpu: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  ip: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  ram: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  storage: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
 export type Pod = {
   __typename?: 'Pod';
   image: Scalars['String']['output'];
@@ -194,6 +207,7 @@ export type Query = {
   __typename?: 'Query';
   getDomains: Array<Domain>;
   getLoadBalancerIP: Scalars['String']['output'];
+  getNodes: Array<NodeEntity>;
   getPodLogs: Array<Scalars['String']['output']>;
   getProjectById: Project;
   getProjectEnvironmentVariables: Array<EnvironmentVariable>;
@@ -412,6 +426,11 @@ export type ServicePodsSubscriptionVariables = Exact<{
 
 
 export type ServicePodsSubscription = { __typename?: 'Subscription', message: { __typename?: 'PodMessage', type: PodEventType, pod: { __typename?: 'Pod', name: string, status: string, node: string, image: string, startTime: string } } };
+
+export type GetNodesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetNodesQuery = { __typename?: 'Query', nodes: Array<{ __typename?: 'NodeEntity', id: string, name: string, ip: string, status: string, cpu: string, ram: string, storage: string }> };
 
 export type CreateProjectMutationVariables = Exact<{
   input: CreateProjectInput;
@@ -952,6 +971,51 @@ export function useServicePodsSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type ServicePodsSubscriptionHookResult = ReturnType<typeof useServicePodsSubscription>;
 export type ServicePodsSubscriptionResult = Apollo.SubscriptionResult<ServicePodsSubscription>;
+export const GetNodesDocument = gql`
+    query getNodes {
+  nodes: getNodes {
+    id
+    name
+    ip
+    status
+    cpu
+    ram
+    storage
+  }
+}
+    `;
+
+/**
+ * __useGetNodesQuery__
+ *
+ * To run a query within a React component, call `useGetNodesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNodesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNodesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetNodesQuery(baseOptions?: Apollo.QueryHookOptions<GetNodesQuery, GetNodesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetNodesQuery, GetNodesQueryVariables>(GetNodesDocument, options);
+      }
+export function useGetNodesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNodesQuery, GetNodesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetNodesQuery, GetNodesQueryVariables>(GetNodesDocument, options);
+        }
+export function useGetNodesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetNodesQuery, GetNodesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetNodesQuery, GetNodesQueryVariables>(GetNodesDocument, options);
+        }
+export type GetNodesQueryHookResult = ReturnType<typeof useGetNodesQuery>;
+export type GetNodesLazyQueryHookResult = ReturnType<typeof useGetNodesLazyQuery>;
+export type GetNodesSuspenseQueryHookResult = ReturnType<typeof useGetNodesSuspenseQuery>;
+export type GetNodesQueryResult = Apollo.QueryResult<GetNodesQuery, GetNodesQueryVariables>;
 export const CreateProjectDocument = gql`
     mutation CreateProject($input: CreateProjectInput!) {
   createProject(createProjectInput: $input) {

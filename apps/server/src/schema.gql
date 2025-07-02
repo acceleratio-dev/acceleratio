@@ -112,6 +112,18 @@ type ServiceDomainsObject {
   port: Float!
 }
 
+type NodeEntity {
+  id: String!
+  name: String!
+  ip: String!
+  status: String!
+  cpu: String!
+  ram: String!
+  storage: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
 type Query {
   getServicePods(serviceId: String!): [Pod!]!
   getLoadBalancerIP: String!
@@ -125,6 +137,7 @@ type Query {
   getServiceEnvironmentVariables(serviceId: String!): [EnvironmentVariable!]!
   getDomains: [Domain!]!
   getServiceDomains(serviceId: String!): [ServiceDomainsObject!]!
+  getNodes: [NodeEntity!]!
 }
 
 type Mutation {

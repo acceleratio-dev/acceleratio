@@ -11,6 +11,7 @@ import configuration from './config/configuration';
 import { GraphQLError } from 'graphql';
 import { DomainsModule } from './domains/domains.module';
 import { EnvironmentVariablesModule } from './environment-variables/environment-variables.module';
+import { NodesModule } from './nodes/nodes.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { EnvironmentVariablesModule } from './environment-variables/environment-
     ProjectsModule,
     DomainsModule,
     EnvironmentVariablesModule,
+    NodesModule,
   ],
   controllers: [],
   providers: [],

@@ -33,13 +33,14 @@ export const DomainsList = () => {
             <TableBody>
               {loading ? (
                 <LoadingState />
-              ) : data?.domains.length === 0 ? (
-                <EmptyState />
-              ) : (
+              ) : data?.domains.length && data?.domains.length > 0 ? (
                 data?.domains.map((domain) => <DomainItem key={domain.id} domain={domain} />)
-              )}
+              ) : null}
             </TableBody>
           </Table>
+           {
+            data?.domains.length && data?.domains.length === 0 ? <EmptyState /> : null
+           }
         </div>
       </CardContent>
     </Card>

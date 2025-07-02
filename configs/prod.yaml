@@ -59,11 +59,20 @@ spec:
         - name: server
           image: orazbayev/server:latest
           imagePullPolicy: Always
+          volumeMounts:
+            - name: token-volume
+              mountPath: /token
+              readOnly: true
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: app-config
+      volumes:
+        - name: token-volume
+          hostPath:
+            path: /var/lib/rancher/k3s/server
+            type: Directory
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

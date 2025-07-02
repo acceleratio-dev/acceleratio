@@ -1,0 +1,11 @@
+query getNodes {
+  nodes: getNodes {
+    id
+    name
+    ip
+    status
+    cpu
+    ram
+    storage
+  }
+}
