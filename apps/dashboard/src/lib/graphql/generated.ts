@@ -89,6 +89,7 @@ export type Mutation = {
   deleteEnvironmentVariable: Scalars['Boolean']['output'];
   deployService: Scalars['Boolean']['output'];
   removeDomainFromService: Scalars['Boolean']['output'];
+  removeNode: Scalars['Boolean']['output'];
   restartPod: Scalars['Boolean']['output'];
   stopService: Scalars['Boolean']['output'];
   updateDomainStatuses: Scalars['Boolean']['output'];
@@ -139,6 +140,11 @@ export type MutationRemoveDomainFromServiceArgs = {
 };
 
 
+export type MutationRemoveNodeArgs = {
+  nodeId: Scalars['String']['input'];
+};
+
+
 export type MutationRestartPodArgs = {
   podName: Scalars['String']['input'];
   serviceId: Scalars['String']['input'];
@@ -165,6 +171,7 @@ export type NodeEntity = {
   createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
   ip: Scalars['String']['output'];
+  isMaster: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   ram: Scalars['String']['output'];
   status: Scalars['String']['output'];
@@ -205,6 +212,7 @@ export type Project = {
 
 export type Query = {
   __typename?: 'Query';
+  getAddNodeCommand: Scalars['String']['output'];
   getDomains: Array<Domain>;
   getLoadBalancerIP: Scalars['String']['output'];
   getNodes: Array<NodeEntity>;
@@ -277,10 +285,12 @@ export type Service = {
 
 export type ServiceDeployment = {
   __typename?: 'ServiceDeployment';
+  cpuLimit?: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   image: Scalars['String']['output'];
   internalName?: Maybe<Scalars['String']['output']>;
+  memoryLimit?: Maybe<Scalars['Float']['output']>;
   provider: ServiceDeploymentProvider;
   replicas?: Maybe<Scalars['Float']['output']>;
   serviceId: Scalars['String']['output'];
@@ -335,8 +345,10 @@ export type SubscriptionServicePodsArgs = {
 };
 
 export type UpdateServiceDeploymentInput = {
+  cpuLimit?: InputMaybe<Scalars['Float']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   internalName?: InputMaybe<Scalars['String']['input']>;
+  memoryLimit?: InputMaybe<Scalars['Float']['input']>;
   provider?: InputMaybe<ServiceDeploymentProvider>;
   replicas?: InputMaybe<Scalars['Float']['input']>;
   serviceId: Scalars['String']['input'];
@@ -427,10 +439,22 @@ export type ServicePodsSubscriptionVariables = Exact<{
 
 export type ServicePodsSubscription = { __typename?: 'Subscription', message: { __typename?: 'PodMessage', type: PodEventType, pod: { __typename?: 'Pod', name: string, status: string, node: string, image: string, startTime: string } } };
 
+export type GetAddNodeCommandQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAddNodeCommandQuery = { __typename?: 'Query', command: string };
+
 export type GetNodesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetNodesQuery = { __typename?: 'Query', nodes: Array<{ __typename?: 'NodeEntity', id: string, name: string, ip: string, status: string, cpu: string, ram: string, storage: string }> };
+
+export type RemoveNodeMutationVariables = Exact<{
+  nodeId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveNodeMutation = { __typename?: 'Mutation', removeNode: boolean };
 
 export type CreateProjectMutationVariables = Exact<{
   input: CreateProjectInput;
@@ -470,21 +494,21 @@ export type GetServiceDeploymentsQueryVariables = Exact<{
 }>;
 
 
-export type GetServiceDeploymentsQuery = { __typename?: 'Query', deployments: Array<{ __typename?: 'ServiceDeployment', id: string, serviceId: string, provider: ServiceDeploymentProvider, image: string, internalName?: string | null, replicas?: number | null, status: ServiceDeploymentStatus, createdAt: any, updatedAt: any }> };
+export type GetServiceDeploymentsQuery = { __typename?: 'Query', deployments: Array<{ __typename?: 'ServiceDeployment', id: string, serviceId: string, provider: ServiceDeploymentProvider, image: string, internalName?: string | null, replicas?: number | null, status: ServiceDeploymentStatus, cpuLimit?: number | null, memoryLimit?: number | null, createdAt: any, updatedAt: any }> };
 
 export type ServiceDeploymentsSubscriptionVariables = Exact<{
   serviceId: Scalars['String']['input'];
 }>;
 
 
-export type ServiceDeploymentsSubscription = { __typename?: 'Subscription', payload: { __typename?: 'ServiceDeploymentEventMessage', event_type: ServiceDeploymentEventType, deployment: { __typename?: 'ServiceDeployment', id: string, serviceId: string, provider: ServiceDeploymentProvider, image: string, internalName?: string | null, replicas?: number | null, status: ServiceDeploymentStatus, createdAt: any, updatedAt: any } } };
+export type ServiceDeploymentsSubscription = { __typename?: 'Subscription', payload: { __typename?: 'ServiceDeploymentEventMessage', event_type: ServiceDeploymentEventType, deployment: { __typename?: 'ServiceDeployment', id: string, serviceId: string, provider: ServiceDeploymentProvider, image: string, internalName?: string | null, replicas?: number | null, status: ServiceDeploymentStatus, cpuLimit?: number | null, memoryLimit?: number | null, createdAt: any, updatedAt: any } } };
 
 export type UpdateServiceDeploymentMutationVariables = Exact<{
   updateServiceDeploymentInput: UpdateServiceDeploymentInput;
 }>;
 
 
-export type UpdateServiceDeploymentMutation = { __typename?: 'Mutation', updateServiceDeployment: { __typename?: 'ServiceDeployment', id: string, serviceId: string, provider: ServiceDeploymentProvider, image: string, internalName?: string | null, replicas?: number | null, status: ServiceDeploymentStatus } };
+export type UpdateServiceDeploymentMutation = { __typename?: 'Mutation', updateServiceDeployment: { __typename?: 'ServiceDeployment', id: string, serviceId: string, provider: ServiceDeploymentProvider, image: string, internalName?: string | null, replicas?: number | null, status: ServiceDeploymentStatus, cpuLimit?: number | null, memoryLimit?: number | null } };
 
 export type GetServicesByProjectIdQueryVariables = Exact<{
   projectId: Scalars['String']['input'];
@@ -971,6 +995,43 @@ export function useServicePodsSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type ServicePodsSubscriptionHookResult = ReturnType<typeof useServicePodsSubscription>;
 export type ServicePodsSubscriptionResult = Apollo.SubscriptionResult<ServicePodsSubscription>;
+export const GetAddNodeCommandDocument = gql`
+    query GetAddNodeCommand {
+  command: getAddNodeCommand
+}
+    `;
+
+/**
+ * __useGetAddNodeCommandQuery__
+ *
+ * To run a query within a React component, call `useGetAddNodeCommandQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAddNodeCommandQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAddNodeCommandQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAddNodeCommandQuery(baseOptions?: Apollo.QueryHookOptions<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>(GetAddNodeCommandDocument, options);
+      }
+export function useGetAddNodeCommandLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>(GetAddNodeCommandDocument, options);
+        }
+export function useGetAddNodeCommandSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>(GetAddNodeCommandDocument, options);
+        }
+export type GetAddNodeCommandQueryHookResult = ReturnType<typeof useGetAddNodeCommandQuery>;
+export type GetAddNodeCommandLazyQueryHookResult = ReturnType<typeof useGetAddNodeCommandLazyQuery>;
+export type GetAddNodeCommandSuspenseQueryHookResult = ReturnType<typeof useGetAddNodeCommandSuspenseQuery>;
+export type GetAddNodeCommandQueryResult = Apollo.QueryResult<GetAddNodeCommandQuery, GetAddNodeCommandQueryVariables>;
 export const GetNodesDocument = gql`
     query getNodes {
   nodes: getNodes {
@@ -1016,6 +1077,37 @@ export type GetNodesQueryHookResult = ReturnType<typeof useGetNodesQuery>;
 export type GetNodesLazyQueryHookResult = ReturnType<typeof useGetNodesLazyQuery>;
 export type GetNodesSuspenseQueryHookResult = ReturnType<typeof useGetNodesSuspenseQuery>;
 export type GetNodesQueryResult = Apollo.QueryResult<GetNodesQuery, GetNodesQueryVariables>;
+export const RemoveNodeDocument = gql`
+    mutation RemoveNode($nodeId: String!) {
+  removeNode(nodeId: $nodeId)
+}
+    `;
+export type RemoveNodeMutationFn = Apollo.MutationFunction<RemoveNodeMutation, RemoveNodeMutationVariables>;
+
+/**
+ * __useRemoveNodeMutation__
+ *
+ * To run a mutation, you first call `useRemoveNodeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveNodeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeNodeMutation, { data, loading, error }] = useRemoveNodeMutation({
+ *   variables: {
+ *      nodeId: // value for 'nodeId'
+ *   },
+ * });
+ */
+export function useRemoveNodeMutation(baseOptions?: Apollo.MutationHookOptions<RemoveNodeMutation, RemoveNodeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveNodeMutation, RemoveNodeMutationVariables>(RemoveNodeDocument, options);
+      }
+export type RemoveNodeMutationHookResult = ReturnType<typeof useRemoveNodeMutation>;
+export type RemoveNodeMutationResult = Apollo.MutationResult<RemoveNodeMutation>;
+export type RemoveNodeMutationOptions = Apollo.BaseMutationOptions<RemoveNodeMutation, RemoveNodeMutationVariables>;
 export const CreateProjectDocument = gql`
     mutation CreateProject($input: CreateProjectInput!) {
   createProject(createProjectInput: $input) {
@@ -1210,6 +1302,8 @@ export const GetServiceDeploymentsDocument = gql`
     internalName
     replicas
     status
+    cpuLimit
+    memoryLimit
     createdAt
     updatedAt
   }
@@ -1260,6 +1354,8 @@ export const ServiceDeploymentsDocument = gql`
       internalName
       replicas
       status
+      cpuLimit
+      memoryLimit
       createdAt
       updatedAt
     }
@@ -1301,6 +1397,8 @@ export const UpdateServiceDeploymentDocument = gql`
     internalName
     replicas
     status
+    cpuLimit
+    memoryLimit
   }
 }
     `;

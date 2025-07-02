@@ -43,6 +43,14 @@ export class ServiceDeployment {
   @Column()
   status: ServiceDeploymentStatus;
 
+  @Field(() => Number, { nullable: true })
+  @Column({ nullable: true })
+  cpuLimit: number;
+
+  @Field(() => Number, { nullable: true })
+  @Column({ nullable: true })
+  memoryLimit: number;
+
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;

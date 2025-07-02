@@ -13,6 +13,8 @@ type Form = {
   image: string;
   replicas: number;
   internalName: string;
+  cpuLimit: string;
+  memoryLimit: string;
 };
 
 export const Settings = () => {
@@ -39,6 +41,8 @@ export const Settings = () => {
       image: deployments[0]?.image ?? '',
       replicas: deployments[0]?.replicas ?? 1,
       internalName: deployments[0]?.internalName ?? '',
+      cpuLimit: deployments[0]?.cpuLimit ? deployments[0].cpuLimit.toString() : undefined,
+      memoryLimit: deployments[0]?.memoryLimit ? deployments[0].memoryLimit.toString() : undefined,
     });
   }, [deployments]);
 
@@ -49,6 +53,8 @@ export const Settings = () => {
           serviceId: service.id,
           ...data,
           replicas: Number(data.replicas),
+          cpuLimit: data?.cpuLimit?.length > 0 ? Number(data.cpuLimit) : null,
+          memoryLimit: data?.memoryLimit?.length > 0 ? Number(data.memoryLimit) : null,
         },
       },
     });
@@ -94,13 +100,25 @@ export const Settings = () => {
             </div>
             <div className="space-y-4 mt-4">
               <FormInput label="Replicas" {...register('replicas')} />
-              <FormInput label="CPU Limit" placeholder="Unlimited" />
-              <FormInput label="RAM Limit" placeholder="Unlimited" />
+              <FormInput
+                label="CPU Limit (1000 m = 1 CPU)"
+                placeholder="Unlimited"
+                type="number"
+                {...register('cpuLimit')}
+              />
+              <FormInput
+                label="RAM Limit (953 MiB = 1GB)"
+                placeholder="Unlimited"
+                type="number"
+                {...register('memoryLimit')}
+              />
             </div>
           </div>
           {/* <Button type="submit" form="deployment-form" disabled={loading} className="w-full">
             Save changes
           </Button> */}
+
+          <div className='h-0.5 my-20 bg-slate-300' />
 
           <DangerZone />
         </div>

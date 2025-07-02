@@ -8,6 +8,10 @@ export class NodeEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Field(() => Boolean)
+  @Column({ type: 'boolean', default: false })
+  isMaster: boolean;
+
   @Field(() => String)
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;

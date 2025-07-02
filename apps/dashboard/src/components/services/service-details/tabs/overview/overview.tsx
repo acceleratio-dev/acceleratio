@@ -38,11 +38,15 @@ export const Overview = () => {
           </div>
           <div className="flex">
             <div className="text-sm text-gray-500 w-1/2">CPU</div>
-            <div className="text-sm font-medium text-slate-700">100m</div>
+            <div className="text-sm font-medium text-slate-700">
+              {latestDeployment.cpuLimit ? `${latestDeployment.cpuLimit}m` : 'Unlimited'}
+            </div>
           </div>
           <div className="flex">
             <div className="text-sm text-gray-500 w-1/2">Memory</div>
-            <div className="text-sm font-medium text-slate-700">100Mi</div>
+            <div className="text-sm font-medium text-slate-700">
+              {latestDeployment.memoryLimit ? `${latestDeployment.memoryLimit}Mi` : 'Unlimited'}
+            </div>
           </div>
         </div>
       </div>

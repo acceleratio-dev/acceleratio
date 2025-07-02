@@ -17,4 +17,10 @@ export class UpdateServiceDeploymentInput {
 
   @Field(() => Number, { nullable: true })
   replicas?: number;
+
+  @Field(() => Number, { nullable: true })
+  cpuLimit?: number;
+
+  @Field(() => Number, { nullable: true })
+  memoryLimit?: number;
 }

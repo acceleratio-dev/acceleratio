@@ -223,7 +223,7 @@ export class KubernetesService implements OnModuleInit {
           status: pod?.status?.phase || 'N/A',
           startTime: pod?.status?.startTime ? new Date(pod.status.startTime).getTime() : 'N/A',
         };
-        if (type === 'DELETED') {
+        if (type === 'DELETED' || pod?.status?.phase === 'Terminated') {
           this.podsPubSub.publish(`pods:${pod.metadata.labels.service}`, {
             type: PodEventType.DELETED,
             pod: responsePod,

@@ -9,6 +9,8 @@ subscription ServiceDeployments($serviceId: String!) {
       internalName
       replicas
       status
+      cpuLimit
+      memoryLimit
       createdAt
       updatedAt
     }

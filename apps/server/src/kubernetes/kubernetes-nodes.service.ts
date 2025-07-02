@@ -17,9 +17,6 @@ export class KubernetesNodesService {
   async getNodes() {
     const nodes = await this.kubernetesApi.listNode();
 
-    const token = await this.getNodeToken();
-    console.log(token);
-
     return nodes.items.map((node) => {
       const isMaster =
         node.metadata.labels['node-role.kubernetes.io/master'] === 'true' ||
@@ -27,6 +24,7 @@ export class KubernetesNodesService {
 
       return {
         name: node.metadata.name,
+        customName: node.metadata.labels['acceleratio/node-name'] || node.metadata.name,
         isMaster,
         ip: node.status.addresses.find((address) => address.type === 'InternalIP')?.address,
         cpu: node.status.allocatable.cpu,
@@ -37,11 +35,36 @@ export class KubernetesNodesService {
     });
   }
 
+  async renameNode(kubernetesName: string, newName: string) {
+    const node = await this.kubernetesApi.readNode({ name: kubernetesName });
+    if (!node) {
+      throw new Error('Node not found');
+    }
+
+    await this.kubernetesApi.patchNode({
+      name: kubernetesName,
+      body: {
+        metadata: {
+          labels: {
+            'acceleratio/node-name': newName,
+          },
+        },
+      },
+    });
+  }
+
+  async removeNode(kubernetesName: string) {
+    await this.kubernetesApi.deleteNode({ name: kubernetesName });
+  }
+
   async getNodeToken() {
     try {
       const token = fs.readFileSync('/token/node-token', 'utf8').trim();
       return token;
     } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        return 'MOCK-K3S-TOKEN';
+      }
       console.error('Error reading node token:', error);
       throw error;
     }

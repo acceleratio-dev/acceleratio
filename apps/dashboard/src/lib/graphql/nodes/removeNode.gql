@@ -1,0 +1,3 @@
+mutation RemoveNode($nodeId: String!) {
+  removeNode(nodeId: $nodeId)
+}

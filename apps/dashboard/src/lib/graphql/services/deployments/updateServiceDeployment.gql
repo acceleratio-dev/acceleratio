@@ -7,5 +7,7 @@ mutation UpdateServiceDeployment($updateServiceDeploymentInput: UpdateServiceDep
     internalName
     replicas
     status
+    cpuLimit
+    memoryLimit
   }
 }

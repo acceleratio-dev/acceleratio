@@ -67,6 +67,8 @@ type ServiceDeployment {
   internalName: String
   replicas: Float
   status: ServiceDeploymentStatus!
+  cpuLimit: Float
+  memoryLimit: Float
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -114,6 +116,7 @@ type ServiceDomainsObject {
 
 type NodeEntity {
   id: String!
+  isMaster: Boolean!
   name: String!
   ip: String!
   status: String!
@@ -138,6 +141,7 @@ type Query {
   getDomains: [Domain!]!
   getServiceDomains(serviceId: String!): [ServiceDomainsObject!]!
   getNodes: [NodeEntity!]!
+  getAddNodeCommand: String!
 }
 
 type Mutation {
@@ -154,6 +158,7 @@ type Mutation {
   createDomain(createDomainInput: CreateDomainInput!): Domain!
   removeDomainFromService(serviceId: String!, url: String!, path: String!): Boolean!
   assignDomainToService(assignDomainInput: AssignDomainInput!): Boolean!
+  removeNode(nodeId: String!): Boolean!
 }
 
 input UpdateServiceInput {
@@ -172,6 +177,8 @@ input UpdateServiceDeploymentInput {
   provider: ServiceDeploymentProvider
   image: String
   replicas: Float
+  cpuLimit: Float
+  memoryLimit: Float
 }
 
 input CreateProjectInput {

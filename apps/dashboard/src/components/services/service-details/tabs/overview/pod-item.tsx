@@ -36,7 +36,18 @@ export const PodItem = ({ pod }: { pod: GetServicePodsQuery['pods'][number] }) =
     <div className="divide-x h-12 text-sm grid grid-cols-6">
       <div className="h-12 flex items-center pl-4">...{pod.name.slice(pod.name.length - 5)}</div>
       <div className="pl-4 h-12 flex items-center">{pod.status}</div>
-      <div className="px-4 leading-12 overflow-hidden text-ellipsis whitespace-nowrap inline-block ">{pod.node}</div>
+      <div className='px-4 flex items-center'>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="overflow-hidden text-ellipsis whitespace-nowrap inline-block max-w-full">
+                {pod.node}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>{pod.node}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       <div className="pl-4 h-12 flex items-center">{pod.image}</div>
       <div className="pl-4 h-12 flex items-center">
         {pod.startTime !== 'N/A' ? moment(Number(pod.startTime)).fromNow(true) : 'N/A'}
